@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     const { message, dosha, category } = await req.json();
 
-    console.log('Received request:', { message, dosha, category });
+    console.log('Processing request:', { message, dosha, category });
 
     if (!openAIApiKey) {
       throw new Error('OPENAI_API_KEY is not configured');
@@ -28,6 +28,8 @@ serve(async (req) => {
     Давай подробные, но лаконичные ответы, основанные на принципах Аюрведы.
     Используй простой и понятный язык. Отвечай на русском языке.`;
 
+    console.log('Sending request to OpenAI');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,11 +48,11 @@ serve(async (req) => {
     if (!response.ok) {
       const error = await response.json();
       console.error('OpenAI API error:', error);
-      throw new Error('Failed to get response from OpenAI');
+      throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
-    console.log('OpenAI response received');
+    console.log('Successfully received OpenAI response');
     
     return new Response(JSON.stringify({ response: data.choices[0].message.content }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
