@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { useState, useEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
-import { getDoshaRecommendations } from "@/utils/doshaRecommendations";
 import { DoshaType } from "@/types/dosha";
 import { 
   Apple, 
@@ -16,21 +15,51 @@ import {
 } from "lucide-react";
 
 const generateAIResponse = (message: string, dosha: DoshaType, category: string) => {
-  // Базовые знания об Аюрведе для разных категорий
+  // Создаем базу знаний об Аюрведе
   const ayurvedaKnowledge = {
-    nutrition: "питании, диете, правильном приеме пищи, специях и травах",
-    health: "здоровье, лечении, профилактике заболеваний, балансе дош",
-    meditation: "медитации, духовных практиках, йоге, пранаяме",
-    routine: "ежедневных практиках, режиме дня, сезонных рекомендациях"
+    vata: {
+      "ранний подъем": "В Аюрведе для Ваты ранний подъем рекомендуется между 5:00 и 6:00 утра. Это время, когда преобладает энергия Вата, что помогает начать день легко и естественно. Важно просыпаться до восхода солнца, чтобы синхронизироваться с природными ритмами.",
+      "медитация": "Для Ваты особенно полезны успокаивающие медитации, которые помогают заземлиться и сбалансировать активный ум. Лучшее время для медитации - раннее утро.",
+    },
+    pitta: {
+      "ранний подъем": "Для Питты оптимальное время подъёма - между 5:30 и 6:30 утра. В это время природная энергия способствует продуктивному началу дня. Рекомендуется начинать утро с прохладного душа для баланса.",
+      "медитация": "Питте полезны охлаждающие медитативные практики, особенно в вечернее время, когда нужно успокоить накопившийся за день жар.",
+    },
+    kapha: {
+      "ранний подъем": "Для Капхи крайне важен ранний подъём - идеально между 4:30 и 5:30 утра. Это помогает преодолеть природную тяжесть и инертность Капха-доши. После пробуждения рекомендуется сразу же заняться активной деятельностью.",
+      "медитация": "Капхе подходят более динамичные медитации, возможно совмещённые с движением или пранаямой, чтобы поддерживать бодрость и внимательность.",
+    }
   };
 
-  // Генерация персонализированного ответа
-  const baseResponse = `На основе принципов Аюрведы и учитывая вашу ${dosha} дошу, а также ваш вопрос о ${ayurvedaKnowledge[category as keyof typeof ayurvedaKnowledge]}, могу сказать следующее:\n\n`;
-  
-  // Добавление специфичных рекомендаций
-  const specificRecommendations = getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine');
-  
-  return baseResponse + specificRecommendations;
+  // Функция для поиска наиболее подходящего ответа
+  const findBestResponse = (question: string, doshaType: DoshaType) => {
+    const doshaInfo = ayurvedaKnowledge[doshaType];
+    const questionLower = question.toLowerCase();
+    
+    // Проверяем, есть ли прямое совпадение
+    for (const [key, value] of Object.entries(doshaInfo)) {
+      if (questionLower.includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+
+    // Если прямого совпадения нет, даём общий ответ по контексту
+    let response = `Исходя из принципов Аюрведы и учитывая вашу ${doshaType} дошу, `;
+    
+    if (questionLower.includes("питание") || questionLower.includes("еда")) {
+      response += "важно подбирать питание, которое уравновешивает ваши природные качества. ";
+    } else if (questionLower.includes("сон") || questionLower.includes("режим")) {
+      response += "режим дня играет ключевую роль в поддержании баланса. ";
+    } else if (questionLower.includes("практик") || questionLower.includes("упражнен")) {
+      response += "физические и духовные практики должны соответствовать вашей природе. ";
+    }
+    
+    response += "Могу подробнее рассказать о конкретных аспектах, которые вас интересуют.";
+    
+    return response;
+  };
+
+  return findBestResponse(message, dosha);
 };
 
 const Index = () => {
@@ -103,14 +132,12 @@ const Index = () => {
   };
 
   const handleSendMessage = (message: string) => {
-    // Добавляем сообщение пользователя
     setMessages(prev => [...prev, {
       content: message,
       isAi: false,
       timestamp: new Date()
     }]);
     
-    // Генерируем и добавляем ответ ИИ
     const response = generateAIResponse(message, dosha, category || 'routine');
     simulateTyping(response);
   };
