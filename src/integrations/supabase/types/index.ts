@@ -1,3 +1,7 @@
+import type { Herb } from './herbs';
+import type { Profile } from './profiles';
+import type { Recipe } from './recipes';
+
 export * from './herbs';
 export * from './profiles';
 export * from './recipes';
