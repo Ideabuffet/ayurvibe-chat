@@ -91,7 +91,7 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-soft': 'linear-gradient(to right, #e0c3fc 0%, #8ec5fc 100%)',
-        'gradient-animated': 'linear-gradient(-45deg, #FAF3E7, #E6D5C7, #D4A373, #C6A760)',
+        'gradient-animated': 'linear-gradient(-45deg, #E6D5C7, #8B9D83, #407D7A, #D4A373)',
       },
       backgroundSize: {
         'animated': '400% 400%',
