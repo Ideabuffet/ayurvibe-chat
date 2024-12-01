@@ -69,7 +69,7 @@ export const DoshaQuiz = () => {
       setCurrentSection(currentSection + 1);
       setCurrentQuestion(0);
     } else {
-      setShowResults(true);
+      setShowingResults(true);
     }
     setSelectedAnswer(null);
   };
