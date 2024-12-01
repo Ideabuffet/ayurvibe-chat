@@ -74,7 +74,10 @@ const Index = () => {
         </Button>
       </div>
 
-      <NavigationButtons onNavigate={handleNavigateToRecommendation} />
+      <NavigationButtons 
+        onNavigate={handleNavigateToRecommendation} 
+        currentCategory={category}
+      />
       
       {categoryTitle && (
         <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
