@@ -5,6 +5,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { doshaQuestions, type Answer } from "@/data/doshaQuestions";
 import { Disclaimer } from "./Disclaimer";
+import { 
+  Apple, 
+  HeartPulse, 
+  Brain,
+  Calendar
+} from "lucide-react";
 
 type DoshaScores = {
   vata: number;
@@ -61,24 +67,48 @@ export const DoshaQuiz = () => {
     const dominantDosha = getDominantDosha(scores);
 
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Ваш результат</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-lg font-medium">
-            Ваша доминирующая доша: {dominantDosha}
-          </p>
-          <div className="space-y-2">
-            <p>Распределение баллов:</p>
-            <ul className="list-disc pl-5">
-              <li>Вата: {scores.vata}</li>
-              <li>Питта: {scores.pitta}</li>
-              <li>Капха: {scores.kapha}</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Ваш результат</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-lg font-medium">
+              Ваша доминирующая доша: {dominantDosha}
+            </p>
+            <div className="space-y-2">
+              <p>Распределение баллов:</p>
+              <ul className="list-disc pl-5">
+                <li>Вата: {scores.vata}</li>
+                <li>Питта: {scores.pitta}</li>
+                <li>Капха: {scores.kapha}</li>
+              </ul>
+            </div>
+            
+            <div className="pt-6">
+              <p className="font-medium mb-4">Что дальше?</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button className="w-full" variant="outline">
+                  <Apple className="mr-2" />
+                  Рекомендации по питанию
+                </Button>
+                <Button className="w-full" variant="outline">
+                  <HeartPulse className="mr-2" />
+                  Здоровье и лечение
+                </Button>
+                <Button className="w-full" variant="outline">
+                  <Brain className="mr-2" />
+                  Практики и медитации
+                </Button>
+                <Button className="w-full" variant="outline">
+                  <Calendar className="mr-2" />
+                  Ежедневные рутины
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
