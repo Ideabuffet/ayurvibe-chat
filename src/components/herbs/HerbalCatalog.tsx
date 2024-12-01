@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Leaf, LeafyGreen, Flower, Flower2, Plant, Sprout } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Herb {
@@ -14,6 +14,14 @@ interface Herb {
   contraindications: string | null;
   image_url: string | null;
 }
+
+const getHerbIcon = (herbName: string) => {
+  // Rotate through available icons based on herb name length to distribute them evenly
+  const icons = [Leaf, LeafyGreen, Flower, Flower2, Plant, Sprout];
+  const index = herbName.length % icons.length;
+  const IconComponent = icons[index];
+  return <IconComponent className="w-16 h-16 text-ayurveda-primary" strokeWidth={1.5} />;
+};
 
 export const HerbalCatalog = () => {
   const navigate = useNavigate();
@@ -61,17 +69,11 @@ export const HerbalCatalog = () => {
       <Card className="p-4">
         <div className="grid gap-6">
           {herbs?.map((herb) => (
-            <div key={herb.id} className="grid md:grid-cols-3 gap-4 p-4 border rounded-lg">
-              {herb.image_url && (
-                <div className="aspect-square relative overflow-hidden rounded-lg">
-                  <img
-                    src={herb.image_url}
-                    alt={herb.name}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              )}
-              <div className="md:col-span-2 space-y-4">
+            <div key={herb.id} className="grid md:grid-cols-[auto,1fr] gap-4 p-4 border rounded-lg">
+              <div className="flex items-center justify-center w-24 h-24 bg-ayurveda-accent/5 rounded-lg">
+                {getHerbIcon(herb.name)}
+              </div>
+              <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-semibold text-ayurveda-text">{herb.name}</h3>
                   {herb.sanskrit_name && (
