@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { Card } from "@/components/ui/card";
 import { HerbalCatalog } from "./HerbalCatalog";
+import { RecipesCatalog } from "./RecipesCatalog";
 
 export const HerbalSection = () => {
   const navigate = useNavigate();
@@ -56,6 +57,8 @@ export const HerbalSection = () => {
 
       {subcategory === 'base' ? (
         <HerbalCatalog />
+      ) : subcategory === 'recipes' ? (
+        <RecipesCatalog />
       ) : (
         <Card className="p-4">
           <ChatContainer category="herbs" dosha="vata" />

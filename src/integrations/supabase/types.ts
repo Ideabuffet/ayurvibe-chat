@@ -60,6 +60,42 @@ export type Database = {
         }
         Relationships: []
       }
+      recipes: {
+        Row: {
+          benefits: string
+          created_at: string
+          description: string
+          id: string
+          ingredients: string
+          instructions: string
+          name: string
+          preparation_time: string
+          type: string
+        }
+        Insert: {
+          benefits: string
+          created_at?: string
+          description: string
+          id?: string
+          ingredients: string
+          instructions: string
+          name: string
+          preparation_time: string
+          type: string
+        }
+        Update: {
+          benefits?: string
+          created_at?: string
+          description?: string
+          id?: string
+          ingredients?: string
+          instructions?: string
+          name?: string
+          preparation_time?: string
+          type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
