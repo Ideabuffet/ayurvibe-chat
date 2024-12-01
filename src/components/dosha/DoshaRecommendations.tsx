@@ -1,10 +1,9 @@
-import { Apple, Calendar, Brain, HeartPulse, Leaf, Utensils, Moon, Palette, Coffee, Sprout, FlaskConical, Droplets, Timer } from "lucide-react";
+import { Apple, Calendar, Brain, HeartPulse, Leaf, Utensils, Moon, Palette, Coffee, Sprout, FlaskConical, Droplets, Timer, GitBranch, User, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
 import { Card } from "@/components/ui/card";
 import { ChatContainer } from "@/components/chat/ChatContainer";
-import { NavigationButtons } from "@/components/chat/NavigationButtons";
 
 interface DoshaRecommendationsProps {
   dominantDosha: DoshaType;
@@ -186,34 +185,100 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
       </section>
 
       <div className="mt-8 space-y-6">
+        <h3 className="text-2xl font-bold text-ayurveda-primary border-b pb-2">
+          ПЕРСОНАЛИЗИРОВАННЫЕ РЕКОМЕНДАЦИИ
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Button 
             onClick={() => handleNavigate('health')}
-            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <HeartPulse className="h-5 w-5" />
             Рекомендации по здоровью
           </Button>
           <Button 
             onClick={() => handleNavigate('meditation')}
-            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Brain className="h-5 w-5" />
             Медитации и практики
           </Button>
           <Button 
             onClick={() => handleNavigate('routine')}
-            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Calendar className="h-5 w-5" />
             Режим дня
           </Button>
           <Button 
             onClick={() => handleNavigate('nutrition')}
-            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Apple className="h-5 w-5" />
             Подробнее о питании
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('herbs')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Leaf className="h-5 w-5" />
+            Травяные средства
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('diet')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Utensils className="h-5 w-5" />
+            Диетические рекомендации
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('lifestyle')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <GitBranch className="h-5 w-5" />
+            Образ жизни
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('chronic')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <HeartPulse className="h-5 w-5" />
+            Хронические заболевания
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('detox')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Droplets className="h-5 w-5" />
+            Детокс и очищение
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('stress')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Sprout className="h-5 w-5" />
+            Стресс и эмоции
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('beauty')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <User className="h-5 w-5" />
+            Красота и уход за кожей
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('energy')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Sun className="h-5 w-5" />
+            Энергия и духовность
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('sleep')}
+            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Moon className="h-5 w-5" />
+            Улучшение сна
           </Button>
         </div>
 
