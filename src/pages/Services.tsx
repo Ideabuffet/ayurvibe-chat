@@ -1,26 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import {
-  Yoga,
+  CircleDot,
   Leaf,
-  Plate,
+  UtensilsCrossed,
+  UserStanding,
   HeartPulse,
   Droplet,
-  Lotus,
+  Flower2,
   User,
   Sun,
   Moon,
-  Circle,
 } from "lucide-react";
 import { ServiceButton } from "@/components/ServiceButton";
 
 const services = [
-  { id: "dosha", icon: Circle, label: "Определите свою Дошу" },
+  { id: "dosha", icon: CircleDot, label: "Определите свою Дошу" },
   { id: "herbs", icon: Leaf, label: "Травяные Средства" },
-  { id: "diet", icon: Plate, label: "Диетические Рекомендации" },
-  { id: "lifestyle", icon: Yoga, label: "Образ Жизни" },
+  { id: "diet", icon: UtensilsCrossed, label: "Диетические Рекомендации" },
+  { id: "lifestyle", icon: UserStanding, label: "Образ Жизни" },
   { id: "chronic", icon: HeartPulse, label: "Хронические Заболевания" },
   { id: "detox", icon: Droplet, label: "Детокс и Очищение" },
-  { id: "stress", icon: Lotus, label: "Стресс и Эмоции" },
+  { id: "stress", icon: Flower2, label: "Стресс и Эмоции" },
   { id: "beauty", icon: User, label: "Красота и Уход за Кожей" },
   { id: "energy", icon: Sun, label: "Энергия и Духовность" },
   { id: "sleep", icon: Moon, label: "Улучшение Сна" },
