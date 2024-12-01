@@ -1,20 +1,68 @@
-import { HeartPulse, Brain, Calendar, Apple, Flower2, Utensils, Stethoscope, Droplets, Heart, Sparkles, Zap, Moon } from "lucide-react";
+import { HeartPulse, Brain, Calendar, Apple, Flower2, Utensils, Stethoscope, Droplets, Heart, Sparkles, Zap, Moon, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
 import { Card } from "@/components/ui/card";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { DoshaNutritionSection } from "./DoshaNutritionSection";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { SubscriptionDialog } from "../SubscriptionDialog";
+import { useToast } from "@/components/ui/use-toast";
 
 interface DoshaRecommendationsProps {
   dominantDosha: DoshaType;
 }
 
+const premiumFeatures = [
+  'herbs',
+  'diet',
+  'chronic',
+  'detox',
+  'stress',
+  'beauty',
+  'sleep'
+];
+
 export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setHasActiveSubscription(!!subscription?.is_active);
+      }
+    };
+
+    checkSubscription();
+  }, []);
 
   const handleNavigate = (category: string) => {
+    if (premiumFeatures.includes(category) && !hasActiveSubscription) {
+      setSelectedFeature(category);
+      setShowSubscriptionDialog(true);
+      return;
+    }
     navigate(`/chat/${category}?dosha=${dominantDosha}`);
+  };
+
+  const handleSubscribe = async () => {
+    // TODO: Implement payment processing
+    toast({
+      title: "Скоро будет доступно",
+      description: "Функция оплаты находится в разработке",
+    });
   };
 
   return (
@@ -62,45 +110,63 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           </Button>
           <Button 
             onClick={() => handleNavigate('herbs')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Flower2 className="h-5 w-5" />
             Травяные средства
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('diet')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Utensils className="h-5 w-5" />
             Диетические рекомендации
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('chronic')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Stethoscope className="h-5 w-5" />
             Хронические заболевания
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('detox')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Droplets className="h-5 w-5" />
             Детокс и очищение
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('stress')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Heart className="h-5 w-5" />
             Стресс и эмоции
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('beauty')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Sparkles className="h-5 w-5" />
             Красота и уход за кожей
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
           <Button 
             onClick={() => handleNavigate('energy')}
@@ -111,10 +177,13 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           </Button>
           <Button 
             onClick={() => handleNavigate('sleep')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+            className="relative w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
           >
             <Moon className="h-5 w-5" />
             Улучшение сна
+            {!hasActiveSubscription && (
+              <Crown className="absolute top-2 right-2 h-4 w-4 text-yellow-500" />
+            )}
           </Button>
         </div>
 
@@ -122,6 +191,12 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           <ChatContainer category="dosha" dosha={dominantDosha} />
         </Card>
       </div>
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={() => setShowSubscriptionDialog(false)}
+        onSubscribe={handleSubscribe}
+      />
     </div>
   );
 };
