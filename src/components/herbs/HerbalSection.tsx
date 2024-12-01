@@ -14,28 +14,28 @@ export const HerbalSection = () => {
     {
       id: "base",
       icon: Book,
-      label: "База трав\nИнтерактивный каталог трав с их описанием, изображениями, пользой и противопоказаниями",
+      label: "База трав",
       color: "#4A5D4F",
       path: "/chat/herbs/base"
     },
     {
       id: "recipes",
       icon: ScrollText,
-      label: "Готовые рецепты\nПростые рецепты аюрведических чаев, масел и настоев",
+      label: "Готовые рецепты",
       color: "#D4A373",
       path: "/chat/herbs/recipes"
     },
     {
       id: "combinations",
       icon: GitBranch,
-      label: "Травяные комбинации\nОбъяснение, как смешивать травы для разных целей (например, для снятия стресса или улучшения пищеварения)",
+      label: "Травяные комбинации",
       color: "#8B9D83",
       path: "/chat/herbs/combinations"
     },
     {
       id: "tip",
       icon: Lightbulb,
-      label: "Совет дня\nСлучайный совет о пользе конкретной травы, например, 'Как использовать куркуму для снятия воспаления'",
+      label: "Совет дня",
       color: "#C6A760",
       path: "/chat/herbs/tip"
     }
