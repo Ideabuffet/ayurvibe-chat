@@ -46,20 +46,20 @@ const Services = () => {
               Персонализированный подход к здоровью, основанный на древней мудрости Аюрведы и современных технологиях
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 animate-message-appear delay-200">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8 animate-message-appear delay-200">
               <Button
                 size="lg"
                 onClick={() => navigate("/chat/dosha")}
-                className="bg-gradient-to-r from-ayurveda-teal to-ayurveda-primary hover:opacity-90 transition-opacity text-white"
+                className="bg-gradient-to-r from-ayurveda-teal to-ayurveda-primary hover:opacity-90 transition-all duration-300 transform hover:scale-105 text-white text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl"
               >
                 Определить свою дошу
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => navigate("/chat/general")}
-                className="border-ayurveda-primary text-ayurveda-primary hover:bg-ayurveda-primary/5"
+                className="border-2 border-ayurveda-primary text-ayurveda-primary hover:bg-ayurveda-primary/5 transition-all duration-300 transform hover:scale-105 text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl"
               >
                 Задать вопрос эксперту
               </Button>
@@ -72,11 +72,14 @@ const Services = () => {
       <div className="container mx-auto px-4 py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Feature 1 */}
-          <div className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-full bg-ayurveda-gold/10 flex items-center justify-center mb-6">
-              <Heart className="w-6 h-6 text-ayurveda-gold" />
+          <div 
+            onClick={() => navigate("/consultation")}
+            className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer animate-fade-in"
+          >
+            <div className="w-16 h-16 rounded-full bg-ayurveda-gold/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <Heart className="w-8 h-8 text-ayurveda-gold" />
             </div>
-            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+            <h3 className="text-2xl font-serif font-medium text-ayurveda-primary mb-4 group-hover:text-ayurveda-gold transition-colors">
               Персональная диагностика
             </h3>
             <p className="text-ayurveda-text/70">
@@ -85,11 +88,14 @@ const Services = () => {
           </div>
 
           {/* Feature 2 */}
-          <div className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-full bg-ayurveda-teal/10 flex items-center justify-center mb-6">
-              <MessageCircle className="w-6 h-6 text-ayurveda-teal" />
+          <div 
+            onClick={() => navigate("/chat/general")}
+            className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer animate-fade-in delay-100"
+          >
+            <div className="w-16 h-16 rounded-full bg-ayurveda-teal/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <MessageCircle className="w-8 h-8 text-ayurveda-teal" />
             </div>
-            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+            <h3 className="text-2xl font-serif font-medium text-ayurveda-primary mb-4 group-hover:text-ayurveda-teal transition-colors">
               Экспертная поддержка
             </h3>
             <p className="text-ayurveda-text/70">
@@ -98,11 +104,14 @@ const Services = () => {
           </div>
 
           {/* Feature 3 */}
-          <div className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-full bg-ayurveda-accent/10 flex items-center justify-center mb-6">
-              <Sparkles className="w-6 h-6 text-ayurveda-accent" />
+          <div 
+            onClick={() => navigate("/education")}
+            className="group p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer animate-fade-in delay-200"
+          >
+            <div className="w-16 h-16 rounded-full bg-ayurveda-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <Sparkles className="w-8 h-8 text-ayurveda-accent" />
             </div>
-            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+            <h3 className="text-2xl font-serif font-medium text-ayurveda-primary mb-4 group-hover:text-ayurveda-accent transition-colors">
               Холистический подход
             </h3>
             <p className="text-ayurveda-text/70">
