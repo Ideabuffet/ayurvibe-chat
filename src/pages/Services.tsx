@@ -6,7 +6,7 @@ import {
   Heart,
   BookOpen,
   Droplets,
-  Lotus,
+  Flower2,
   ArrowRight
 } from "lucide-react";
 
@@ -41,7 +41,7 @@ const Services = () => {
     {
       title: "Панчакарма",
       description: "Традиционные процедуры глубокого очищения организма",
-      icon: <Lotus className="w-8 h-8 text-ayurveda-primary" />,
+      icon: <Flower2 className="w-8 h-8 text-ayurveda-primary" />,
       path: "/panchakarma"
     }
   ];
