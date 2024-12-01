@@ -8,8 +8,8 @@ const ParticlesBackground = () => {
     await loadFull(engine);
   }, []);
 
-  const particlesLoaded = useCallback(async (container: Container | undefined) => {
-    console.log("Particles loaded", container);
+  const particlesLoaded = useCallback(async (_container: Container | undefined) => {
+    // Removed console.log to prevent circular structure serialization
   }, []);
 
   return (
