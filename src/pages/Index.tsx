@@ -18,6 +18,24 @@ const getCategoryTitle = (category: string): string => {
       return 'Практики и медитации';
     case 'routine':
       return 'Ежедневные рутины';
+    case 'herbs':
+      return 'Травяные средства';
+    case 'diet':
+      return 'Диетические рекомендации';
+    case 'lifestyle':
+      return 'Образ жизни';
+    case 'chronic':
+      return 'Хронические заболевания';
+    case 'detox':
+      return 'Детокс и очищение';
+    case 'stress':
+      return 'Стресс и эмоции';
+    case 'beauty':
+      return 'Красота и уход за кожей';
+    case 'energy':
+      return 'Энергия и духовность';
+    case 'sleep':
+      return 'Улучшение сна';
     default:
       return '';
   }
@@ -84,11 +102,9 @@ const Index = () => {
         </>
       )}
       
-      {categoryTitle && isDoshaRelated && (
-        <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
-          {categoryTitle}
-        </h1>
-      )}
+      <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
+        {categoryTitle}
+      </h1>
       
       {category && <ChatContainer category={category} dosha={dosha} />}
     </div>
