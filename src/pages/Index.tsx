@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { DoshaType } from "@/types/dosha";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { NavigationButtons } from "@/components/chat/NavigationButtons";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const getCategoryTitle = (category: string): string => {
   switch (category) {
@@ -27,20 +29,38 @@ const Index = () => {
   const navigate = useNavigate();
   const doshaParam = searchParams.get('dosha');
   const dosha = (doshaParam as DoshaType) || 'vata';
+  const [hasResults, setHasResults] = useState(false);
 
-  const handleNavigateToRecommendation = (newCategory: string) => {
-    navigate(`/chat/${newCategory}?dosha=${dosha}`);
-  };
+  useEffect(() => {
+    const checkDoshaResults = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('dosha')
+          .eq('id', session.user.id)
+          .single();
+        
+        setHasResults(!!data?.dosha);
+      }
+    };
 
-  const handleBackToResults = () => {
-    navigate(`/chat/dosha`);
-  };
+    checkDoshaResults();
+  }, []);
 
   if (category === "dosha") {
     return <DoshaQuiz />;
   }
 
   const categoryTitle = getCategoryTitle(category || '');
+
+  const handleBackToResults = () => {
+    if (hasResults) {
+      navigate(`/chat/dosha?showResults=true`);
+    } else {
+      navigate(`/chat/dosha`);
+    }
+  };
 
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">

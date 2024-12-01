@@ -1,24 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { doshaQuestions, type Answer } from "@/data/doshaQuestions";
 import { Disclaimer } from "./Disclaimer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { DoshaScores, DoshaType } from "@/types/dosha";
 import { DoshaResultHeader } from "./dosha/DoshaResultHeader";
 import { DoshaRecommendations } from "./dosha/DoshaRecommendations";
+import { supabase } from "@/integrations/supabase/client";
 
 export const DoshaQuiz = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const showResults = searchParams.get('showResults') === 'true';
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
-  const [showResults, setShowResults] = useState(false);
+  const [showingResults, setShowingResults] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [savedDosha, setSavedDosha] = useState<DoshaType | null>(null);
+  const [savedScores, setSavedScores] = useState<DoshaScores | null>(null);
+
+  useEffect(() => {
+    const loadSavedResults = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('dosha')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (data?.dosha && showResults) {
+          setSavedDosha(data.dosha as DoshaType);
+          setShowingResults(true);
+        }
+      }
+    };
+
+    loadSavedResults();
+  }, [showResults]);
 
   const section = doshaQuestions[currentSection];
   const question = section?.questions[currentQuestion];
@@ -90,19 +115,16 @@ export const DoshaQuiz = () => {
     return "kapha";
   };
 
-  if (showResults) {
-    const scores = calculateResults();
-    const dominantDosha = getDominantDosha(scores);
-
+  if (showingResults && savedDosha) {
     return (
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         <Card className="p-8 bg-white/80 backdrop-blur border-ayurveda-accent/20">
           <div className="space-y-8">
             <DoshaResultHeader 
-              dominantDosha={dominantDosha} 
-              scores={scores} 
+              dominantDosha={savedDosha} 
+              scores={savedScores || { vata: 0, pitta: 0, kapha: 0 }}
             />
-            <DoshaRecommendations dominantDosha={dominantDosha} />
+            <DoshaRecommendations dominantDosha={savedDosha} />
           </div>
         </Card>
       </div>
