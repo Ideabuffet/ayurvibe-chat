@@ -1,6 +1,8 @@
 import { Book, ScrollText, GitBranch, Lightbulb } from "lucide-react";
 import { ServiceButton } from "@/components/ServiceButton";
 import { useNavigate } from "react-router-dom";
+import { ChatContainer } from "@/components/chat/ChatContainer";
+import { Card } from "@/components/ui/card";
 
 export const HerbalSection = () => {
   const navigate = useNavigate();
@@ -37,16 +39,22 @@ export const HerbalSection = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 animate-fade-in">
-      {herbalServices.map((service) => (
-        <ServiceButton
-          key={service.id}
-          icon={service.icon}
-          label={service.label}
-          onClick={() => navigate(service.path)}
-          color={service.color}
-        />
-      ))}
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+        {herbalServices.map((service) => (
+          <ServiceButton
+            key={service.id}
+            icon={service.icon}
+            label={service.label}
+            onClick={() => navigate(service.path)}
+            color={service.color}
+          />
+        ))}
+      </div>
+
+      <Card className="p-4">
+        <ChatContainer category="herbs" dosha="vata" />
+      </Card>
     </div>
   );
 };
