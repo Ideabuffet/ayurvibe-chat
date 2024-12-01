@@ -5,6 +5,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 20000; // 20 seconds
+const NETWORK_RETRY_DELAY = 2000; // 2 seconds
 
 export const getOpenAIResponse = async (
   message: string,
@@ -38,7 +39,7 @@ export const getOpenAIResponse = async (
           { role: "system", content: systemPrompt },
           { role: "user", content: message }
         ],
-        model: "gpt-4",
+        model: "gpt-3.5-turbo", // Using GPT-3.5 to avoid rate limits
         temperature: 0.7,
       });
 
@@ -51,6 +52,7 @@ export const getOpenAIResponse = async (
 
     } catch (error: any) {
       lastError = error;
+      console.error("OpenAI API Error:", error);
       
       if (error?.status === 429) {
         retries--;
@@ -63,7 +65,7 @@ export const getOpenAIResponse = async (
         retries--;
         if (retries > 0) {
           toast.warning("Ошибка сети. Повторная попытка...");
-          await delay(2000); // Short delay for network errors
+          await delay(NETWORK_RETRY_DELAY);
           continue;
         }
       } else {
