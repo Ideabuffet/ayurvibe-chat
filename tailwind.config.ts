@@ -25,11 +25,15 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         ayurveda: {
-          primary: "#4A5D4F",
-          secondary: "#D4A373",
-          accent: "#8B9D83",
-          background: "#FAF3E7",
-          text: "#2C1810",
+          primary: "#4A5D4F",    // Deep sage green
+          secondary: "#D4A373",  // Warm sand
+          accent: "#8B9D83",     // Muted olive
+          background: "#FAF3E7", // Soft cream
+          text: "#2C1810",       // Deep brown
+          gold: "#C6A760",       // Accent gold
+          teal: "#407D7A",       // Deep teal
+          beige: "#E6D5C7",      // Light sand
+          gray: "#9CA3AF",       // Neutral gray
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -60,6 +64,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        sans: ["Poppins", "system-ui", "sans-serif"],
+        serif: ["Playfair Display", "Georgia", "serif"],
+      },
       keyframes: {
         "message-fade-in": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
@@ -73,6 +81,10 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-soft': 'linear-gradient(to right, #e0c3fc 0%, #8ec5fc 100%)',
       },
     },
   },

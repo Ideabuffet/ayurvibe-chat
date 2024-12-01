@@ -30,13 +30,18 @@ const Services = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-ayurveda-background p-4">
-      <div className="container max-w-4xl mx-auto">
-        <h1 className="text-2xl font-semibold text-ayurveda-text mb-6 text-center">
-          Аюрведическая Мудрость
-        </h1>
+    <div className="min-h-screen bg-gradient-to-b from-ayurveda-background to-white p-8">
+      <div className="container max-w-4xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium text-ayurveda-text">
+            Аюрведическая Мудрость
+          </h1>
+          <p className="text-ayurveda-text/80 max-w-2xl mx-auto">
+            Откройте для себя древние практики исцеления и гармонии через нашу коллекцию аюрведических услуг
+          </p>
+        </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {services.map((service) => (
             <ServiceButton
               key={service.id}
