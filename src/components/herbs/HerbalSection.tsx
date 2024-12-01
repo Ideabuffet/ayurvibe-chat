@@ -5,6 +5,7 @@ import { ChatContainer } from "@/components/chat/ChatContainer";
 import { Card } from "@/components/ui/card";
 import { HerbalCatalog } from "./HerbalCatalog";
 import { RecipesCatalog } from "./RecipesCatalog";
+import { CombinationsCatalog } from "./CombinationsCatalog";
 
 export const HerbalSection = () => {
   const navigate = useNavigate();
@@ -59,6 +60,8 @@ export const HerbalSection = () => {
         <HerbalCatalog />
       ) : subcategory === 'recipes' ? (
         <RecipesCatalog />
+      ) : subcategory === 'combinations' ? (
+        <CombinationsCatalog />
       ) : (
         <Card className="p-4">
           <ChatContainer category="herbs" dosha="vata" />
