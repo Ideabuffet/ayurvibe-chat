@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ChatMessage } from "@/components/ChatMessage";
+import { getDoshaRecommendations } from "@/utils/doshaRecommendations";
 import { 
   Apple, 
   HeartPulse, 
