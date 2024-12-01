@@ -9,7 +9,7 @@ const ParticlesBackground = () => {
   }, []);
 
   const particlesLoaded = useCallback(async (_container: Container | undefined) => {
-    // Removed console.log to prevent circular structure serialization
+    // Initialization complete
   }, []);
 
   return (
@@ -18,17 +18,17 @@ const ParticlesBackground = () => {
       init={particlesInit}
       loaded={particlesLoaded}
       options={{
-        background: {
-          color: {
-            value: "#FAF3E7",
-          },
+        fullScreen: {
+          enable: true,
+          zIndex: -1
         },
+        fpsLimit: 60,
         particles: {
           color: {
-            value: "#4A5D4F",
+            value: "#8B9D83",
           },
           links: {
-            color: "#8B9D83",
+            color: "#4A5D4F",
             distance: 150,
             enable: true,
             opacity: 0.2,
@@ -36,22 +36,29 @@ const ParticlesBackground = () => {
           },
           move: {
             enable: true,
-            speed: 1,
+            speed: 0.8,
+            direction: "none",
+            random: false,
+            straight: false,
+            outModes: {
+              default: "bounce",
+            },
           },
           number: {
             density: {
               enable: true,
-              area: 800,
+              area: 1000,
             },
-            value: 80,
+            value: 40,
           },
           opacity: {
-            value: 0.3,
+            value: 0.2,
           },
           size: {
-            value: { min: 1, max: 3 },
+            value: { min: 1, max: 2 },
           },
         },
+        detectRetina: true,
       }}
     />
   );

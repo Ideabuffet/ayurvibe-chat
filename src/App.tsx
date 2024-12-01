@@ -50,81 +50,79 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
-          <div className="min-h-screen relative">
-            <ParticlesBackground />
-            <div className="relative z-10">
-              <Header />
-              <main>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/" element={<Navigate to="/services" replace />} />
-                  <Route
-                    path="/services"
-                    element={
-                      <ProtectedRoute>
-                        <Services />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/consultation"
-                    element={
-                      <ProtectedRoute>
-                        <Consultation />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/medicine"
-                    element={
-                      <ProtectedRoute>
-                        <Medicine />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/education"
-                    element={
-                      <ProtectedRoute>
-                        <Education />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/detox"
-                    element={
-                      <ProtectedRoute>
-                        <Detox />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/panchakarma"
-                    element={
-                      <ProtectedRoute>
-                        <Panchakarma />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/chat/:category"
-                    element={
-                      <ProtectedRoute>
-                        <Index />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/chat/:category/:subcategory"
-                    element={
-                      <ProtectedRoute>
-                        <Index />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </main>
-            </div>
+          <ParticlesBackground />
+          <div className="relative z-10">
+            <Header />
+            <main>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Navigate to="/services" replace />} />
+                <Route
+                  path="/services"
+                  element={
+                    <ProtectedRoute>
+                      <Services />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/consultation"
+                  element={
+                    <ProtectedRoute>
+                      <Consultation />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/medicine"
+                  element={
+                    <ProtectedRoute>
+                      <Medicine />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/education"
+                  element={
+                    <ProtectedRoute>
+                      <Education />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/detox"
+                  element={
+                    <ProtectedRoute>
+                      <Detox />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/panchakarma"
+                  element={
+                    <ProtectedRoute>
+                      <Panchakarma />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chat/:category"
+                  element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chat/:category/:subcategory"
+                  element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </main>
           </div>
           <Toaster />
           <Sonner />
