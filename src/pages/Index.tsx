@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { DoshaType } from "@/types/dosha";
 import { ChatContainer } from "@/components/chat/ChatContainer";
-import { NavigationButtons } from "@/components/chat/NavigationButtons";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { HerbalSection } from "@/components/herbs/HerbalSection";
 
 const getCategoryTitle = (category: string): string => {
   switch (category) {
+    case 'general':
+      return 'Задайте вопрос об Аюрведе';
     case 'nutrition':
       return 'Рекомендации по питанию';
     case 'health':
@@ -52,6 +53,7 @@ const Index = () => {
   const categoryTitle = getCategoryTitle(category || '');
   const isDoshaRelated = doshaParam !== null;
   const isHerbsCategory = category === 'herbs';
+  const isGeneralChat = category === 'general';
 
   useEffect(() => {
     const checkDoshaResults = async () => {
@@ -78,30 +80,17 @@ const Index = () => {
     navigate(`/chat/dosha?showResults=true`);
   };
 
-  const handleNavigateToRecommendation = (newCategory: string) => {
-    navigate(`/chat/${newCategory}?dosha=${dosha}`);
-  };
-
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
-      {isDoshaRelated && (
-        <>
-          <div className="flex items-center justify-between mb-6">
-            <Button 
-              variant="outline" 
-              onClick={handleBackToResults}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Вернуться к результатам
-            </Button>
-          </div>
-
-          <NavigationButtons 
-            onNavigate={handleNavigateToRecommendation} 
-            currentCategory={category}
-          />
-        </>
+      {isDoshaRelated && !isGeneralChat && (
+        <Button 
+          variant="outline" 
+          onClick={handleBackToResults}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Вернуться к результатам
+        </Button>
       )}
       
       <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">

@@ -1,4 +1,4 @@
-import { CircleDot, Info } from "lucide-react";
+import { CircleDot, Info, Leaf, UtensilsCrossed, PersonStanding, HeartPulse, Droplet, Flower2, User, Sun, Moon } from "lucide-react";
 import { DoshaType } from "@/types/dosha";
 import {
   HoverCard,
@@ -6,6 +6,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
+import { ServiceButton } from "@/components/ServiceButton";
+import { useNavigate } from "react-router-dom";
 
 interface DoshaResultHeaderProps {
   dominantDosha: DoshaType;
@@ -34,7 +36,20 @@ const doshaColors: Record<DoshaType, string> = {
   kapha: "from-green-500 to-emerald-500"
 };
 
+const services = [
+  { id: "herbs", icon: Leaf, label: "Травяные\nСредства", color: "#4A5D4F" },
+  { id: "diet", icon: UtensilsCrossed, label: "Диетические\nРекомендации", color: "#D4A373" },
+  { id: "lifestyle", icon: PersonStanding, label: "Образ\nЖизни", color: "#8B9D83" },
+  { id: "chronic", icon: HeartPulse, label: "Хронические\nЗаболевания", color: "#ea384c" },
+  { id: "detox", icon: Droplet, label: "Детокс и\nОчищение", color: "#0EA5E9" },
+  { id: "stress", icon: Flower2, label: "Стресс и\nЭмоции", color: "#8B5CF6" },
+  { id: "beauty", icon: User, label: "Красота и\nУход за Кожей", color: "#F97316" },
+  { id: "energy", icon: Sun, label: "Энергия и\nДуховность", color: "#C6A760" },
+  { id: "sleep", icon: Moon, label: "Улучшение\nСна", color: "#407D7A" },
+];
+
 export const DoshaResultHeader = ({ dominantDosha, scores }: DoshaResultHeaderProps) => {
+  const navigate = useNavigate();
   const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
   
   return (
@@ -91,6 +106,23 @@ export const DoshaResultHeader = ({ dominantDosha, scores }: DoshaResultHeaderPr
                 />
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-2xl font-serif font-medium text-ayurveda-primary text-center">
+          Персонализированные рекомендации
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {services.map((service) => (
+            <ServiceButton
+              key={service.id}
+              icon={service.icon}
+              label={service.label}
+              onClick={() => navigate(`/chat/${service.id}?dosha=${dominantDosha}`)}
+              color={service.color}
+            />
           ))}
         </div>
       </div>
