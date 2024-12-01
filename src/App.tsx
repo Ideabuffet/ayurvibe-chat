@@ -6,28 +6,31 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Header from "./components/Header";
+import React from 'react';
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen bg-ayurveda-background">
-          <Header />
-          <main>
-            <Routes>
-              <Route path="/" element={<Navigate to="/services" replace />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/chat/:category" element={<Index />} />
-            </Routes>
-          </main>
-        </div>
+        <TooltipProvider>
+          <div className="min-h-screen bg-ayurveda-background">
+            <Header />
+            <main>
+              <Routes>
+                <Route path="/" element={<Navigate to="/services" replace />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/chat/:category" element={<Index />} />
+              </Routes>
+            </main>
+          </div>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
       </BrowserRouter>
-      <Toaster />
-      <Sonner />
-    </TooltipProvider>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;
