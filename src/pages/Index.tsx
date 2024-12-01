@@ -62,6 +62,17 @@ const generateAIResponse = (message: string, dosha: DoshaType, category: string)
   return findBestResponse(message, dosha);
 };
 
+const getInitialMessage = (dosha: DoshaType, category: string) => {
+  const categoryMessages = {
+    nutrition: `Давайте поговорим о правильном питании для вашей ${dosha} доши. Что именно вас интересует?`,
+    health: `Поговорим о здоровье с учетом вашей ${dosha} доши. Какие аспекты вас интересуют больше всего?`,
+    meditation: `Расскажу о медитативных практиках для ${dosha} доши. Что бы вы хотели узнать?`,
+    routine: `Обсудим ежедневные практики для ${dosha} доши. С чего бы вы хотели начать?`
+  };
+
+  return categoryMessages[category as keyof typeof categoryMessages] || categoryMessages.routine;
+};
+
 const Index = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
@@ -90,9 +101,9 @@ const Index = () => {
 
   useEffect(() => {
     if (dosha && category && category !== 'dosha') {
-      const initialRecommendation = getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine');
+      const initialMessage = getInitialMessage(dosha, category);
       setMessages([{
-        content: initialRecommendation,
+        content: initialMessage,
         isAi: true,
         timestamp: new Date()
       }]);
@@ -102,7 +113,6 @@ const Index = () => {
   const simulateTyping = (response: string) => {
     setIsTyping(true);
     
-    // Разбиваем ответ на части для имитации печати
     const words = response.split(' ');
     let currentResponse = '';
     let wordIndex = 0;
@@ -128,7 +138,7 @@ const Index = () => {
         clearInterval(typingInterval);
         setIsTyping(false);
       }
-    }, 100); // Скорость "печати"
+    }, 100);
   };
 
   const handleSendMessage = (message: string) => {
@@ -146,6 +156,7 @@ const Index = () => {
     return <DoshaQuiz />;
   }
 
+  // ... keep existing code (JSX for the chat interface)
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
       <div className="flex items-center justify-between mb-6">
