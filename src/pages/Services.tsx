@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Sparkles, ArrowRight } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, ArrowRight, Users, Star, Clock, Shield, Leaf, BookOpen } from "lucide-react";
 import { ServiceButton } from "@/components/ServiceButton";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +64,122 @@ const Services = () => {
                 Задать вопрос эксперту
               </Button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="text-center">
+            <div className="text-4xl font-serif font-bold text-ayurveda-primary mb-2">5000+</div>
+            <p className="text-ayurveda-text/70">Довольных клиентов</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-serif font-bold text-ayurveda-primary mb-2">15+</div>
+            <p className="text-ayurveda-text/70">Лет опыта</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-serif font-bold text-ayurveda-primary mb-2">100%</div>
+            <p className="text-ayurveda-text/70">Натуральные средства</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-serif font-bold text-ayurveda-primary mb-2">24/7</div>
+            <p className="text-ayurveda-text/70">Поддержка</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Benefits Section */}
+      <div className="container mx-auto px-4 py-16 bg-ayurveda-accent/5 rounded-3xl my-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-serif font-medium text-ayurveda-primary mb-4">
+            Почему выбирают нас
+          </h2>
+          <p className="text-ayurveda-text/70 max-w-2xl mx-auto">
+            Мы предлагаем комплексный подход к здоровью, основанный на древних знаниях Аюрведы и современных технологиях
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="w-12 h-12 bg-ayurveda-gold/10 rounded-full flex items-center justify-center mb-6">
+              <Users className="w-6 h-6 text-ayurveda-gold" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              Персональный подход
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Индивидуальные рекомендации с учетом вашей конституции и образа жизни
+            </p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="w-12 h-12 bg-ayurveda-teal/10 rounded-full flex items-center justify-center mb-6">
+              <Star className="w-6 h-6 text-ayurveda-teal" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              Опытные специалисты
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Консультации от сертифицированных врачей с многолетним опытом
+            </p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="w-12 h-12 bg-ayurveda-accent/10 rounded-full flex items-center justify-center mb-6">
+              <Shield className="w-6 h-6 text-ayurveda-accent" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              Безопасность
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Только проверенные методики и натуральные препараты
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-serif font-medium text-ayurveda-primary mb-4">
+            Как это работает
+          </h2>
+          <p className="text-ayurveda-text/70 max-w-2xl mx-auto">
+            Простой путь к гармонии и здоровью с помощью Аюрведы
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-ayurveda-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="w-8 h-8 text-ayurveda-gold" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              1. Определите свою дошу
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Пройдите тест и узнайте свою конституцию
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-ayurveda-teal/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <MessageCircle className="w-8 h-8 text-ayurveda-teal" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              2. Получите консультацию
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Обсудите свои цели со специалистом
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-ayurveda-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Leaf className="w-8 h-8 text-ayurveda-accent" />
+            </div>
+            <h3 className="text-xl font-serif font-medium text-ayurveda-primary mb-4">
+              3. Следуйте рекомендациям
+            </h3>
+            <p className="text-ayurveda-text/70">
+              Внедряйте полученные советы в свою жизнь
+            </p>
           </div>
         </div>
       </div>
