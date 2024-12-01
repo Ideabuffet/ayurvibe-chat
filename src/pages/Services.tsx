@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import {
-  CircleDot,
+  Heart,
   Leaf,
   UtensilsCrossed,
   PersonStanding,
@@ -14,16 +14,16 @@ import {
 import { ServiceButton } from "@/components/ServiceButton";
 
 const services = [
-  { id: "dosha", icon: CircleDot, label: "Определите\nсвою Дошу" },
-  { id: "herbs", icon: Leaf, label: "Травяные\nСредства" },
-  { id: "diet", icon: UtensilsCrossed, label: "Диетические\nРекомендации" },
-  { id: "lifestyle", icon: PersonStanding, label: "Образ\nЖизни" },
-  { id: "chronic", icon: HeartPulse, label: "Хронические\nЗаболевания" },
-  { id: "detox", icon: Droplet, label: "Детокс и\nОчищение" },
-  { id: "stress", icon: Flower2, label: "Стресс и\nЭмоции" },
-  { id: "beauty", icon: User, label: "Красота и\nУход за Кожей" },
-  { id: "energy", icon: Sun, label: "Энергия и\nДуховность" },
-  { id: "sleep", icon: Moon, label: "Улучшение\nСна" },
+  { id: "dosha", icon: Heart, label: "Определите\nсвою Дошу", color: "#D946EF" },
+  { id: "herbs", icon: Leaf, label: "Травяные\nСредства", color: "#4A5D4F" },
+  { id: "diet", icon: UtensilsCrossed, label: "Диетические\nРекомендации", color: "#D4A373" },
+  { id: "lifestyle", icon: PersonStanding, label: "Образ\nЖизни", color: "#8B9D83" },
+  { id: "chronic", icon: HeartPulse, label: "Хронические\nЗаболевания", color: "#ea384c" },
+  { id: "detox", icon: Droplet, label: "Детокс и\nОчищение", color: "#0EA5E9" },
+  { id: "stress", icon: Flower2, label: "Стресс и\nЭмоции", color: "#8B5CF6" },
+  { id: "beauty", icon: User, label: "Красота и\nУход за Кожей", color: "#F97316" },
+  { id: "energy", icon: Sun, label: "Энергия и\nДуховность", color: "#C6A760" },
+  { id: "sleep", icon: Moon, label: "Улучшение\nСна", color: "#407D7A" },
 ];
 
 const Services = () => {
@@ -48,6 +48,7 @@ const Services = () => {
               icon={service.icon}
               label={service.label}
               onClick={() => navigate(`/chat/${service.id}`)}
+              color={service.color}
             />
           ))}
         </div>
