@@ -1,4 +1,4 @@
-import { HeartPulse, Brain, Calendar, Apple, Flower2, Utensils, User, Stethoscope, Droplets, Heart, Sparkles, Zap, Moon } from "lucide-react";
+import { HeartPulse, Brain, Calendar, Apple, Flower2, Utensils, Stethoscope, Droplets, Heart, Sparkles, Zap, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
@@ -73,13 +73,6 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           >
             <Utensils className="h-5 w-5" />
             Диетические рекомендации
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('lifestyle')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <User className="h-5 w-5" />
-            Образ жизни
           </Button>
           <Button 
             onClick={() => handleNavigate('chronic')}
