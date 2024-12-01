@@ -5,23 +5,24 @@ import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
+  disabled?: boolean;
 }
 
-export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
+export const ChatInput = ({ onSendMessage, disabled = false }: ChatInputProps) => {
   const [message, setMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
+    if (message.trim() && !disabled) {
       onSendMessage(message);
       setMessage("");
     }
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault();
       if (message.trim()) {
         onSendMessage(message);
@@ -64,6 +65,7 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
         onKeyPress={handleKeyPress}
         placeholder="Задайте ваш вопрос по Аюрведе..."
         className="flex-1 p-2 rounded-lg border border-ayurveda-accent/30 focus:outline-none focus:border-ayurveda-primary"
+        disabled={disabled}
       />
       <Button
         type="button"
@@ -71,10 +73,11 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
         variant="outline"
         size="icon"
         className={isListening ? "bg-red-100" : ""}
+        disabled={disabled}
       >
         {isListening ? <MicOff size={20} /> : <Mic size={20} />}
       </Button>
-      <Button type="submit" size="icon">
+      <Button type="submit" size="icon" disabled={disabled}>
         <Send size={20} />
       </Button>
     </form>

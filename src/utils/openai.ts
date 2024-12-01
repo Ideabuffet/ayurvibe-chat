@@ -39,7 +39,7 @@ export const getOpenAIResponse = async (
           { role: "system", content: systemPrompt },
           { role: "user", content: message }
         ],
-        model: "gpt-3.5-turbo", // Using GPT-3.5 to avoid rate limits
+        model: "gpt-3.5-turbo",
         temperature: 0.7,
       });
 
@@ -69,13 +69,11 @@ export const getOpenAIResponse = async (
           continue;
         }
       } else {
-        // For other errors, don't retry
         break;
       }
     }
   }
 
-  // Handle final error
   const errorMessage = lastError?.error?.message || lastError?.message || "Неизвестная ошибка";
   toast.error(errorMessage);
   throw new Error(errorMessage);
