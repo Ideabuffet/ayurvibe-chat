@@ -42,7 +42,7 @@ const Services = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
           <ServiceButton
             icon={Heart}
-            label={hasDosha ? "Посмотреть результаты\nанализа доши" : "Определить вашу\nдошу"}
+            label={hasDosha ? "Узнать свой тип доши" : "Узнать свой тип доши"}
             onClick={() => navigate("/chat/dosha")}
             color="#D946EF"
           />
