@@ -3,94 +3,170 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
 import { Card } from "@/components/ui/card";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 
 interface DoshaRecommendationsProps {
   dominantDosha: DoshaType;
 }
 
-const recommendationCategories = {
-  nutrition: {
-    icon: Apple,
-    title: "Питание",
-    description: "Рекомендации по питанию",
-    path: "nutrition"
+const doshaData = {
+  vata: {
+    flavors: ["Sweet", "Sour", "Salty"],
+    foodsToEat: {
+      fruits: "Bananas, mangoes, figs",
+      vegetables: "Sweet potatoes, carrots, beets",
+      grains: "Rice, oatmeal, quinoa",
+      proteins: "Lentils, tofu, eggs"
+    },
+    foodsToAvoid: {
+      fruits: "Apples, pears (avoid raw)",
+      vegetables: "Raw salads, cabbage, broccoli"
+    },
+    mealTimes: {
+      breakfast: "7:00 AM – 8:30 AM (warm, nourishing foods)",
+      lunch: "12:00 PM – 1:30 PM (heaviest meal of the day)",
+      dinner: "6:00 PM – 7:30 PM (light and easily digestible)"
+    },
+    tips: [
+      "Use warming spices like cinnamon, cardamom, and ginger in your meals",
+      "Avoid cold drinks and ice"
+    ]
   },
-  health: {
-    icon: HeartPulse,
-    title: "Здоровье",
-    description: "Здоровье и лечение",
-    path: "health"
+  pitta: {
+    flavors: ["Sweet", "Bitter", "Astringent"],
+    foodsToEat: {
+      fruits: "Sweet apples, sweet pears, dates",
+      vegetables: "Cucumber, leafy greens, zucchini",
+      grains: "Barley, wheat, white rice",
+      proteins: "Mung beans, tofu, white meat"
+    },
+    foodsToAvoid: {
+      fruits: "Sour fruits, citrus",
+      vegetables: "Hot peppers, garlic, onions"
+    },
+    mealTimes: {
+      breakfast: "6:30 AM – 8:00 AM (cool, refreshing foods)",
+      lunch: "12:00 PM – 1:00 PM (main meal)",
+      dinner: "6:00 PM – 7:00 PM (light meal)"
+    },
+    tips: [
+      "Use cooling spices like coriander, fennel, and mint",
+      "Avoid spicy and fermented foods"
+    ]
   },
-  meditation: {
-    icon: Brain,
-    title: "Медитация",
-    description: "Практики и медитации",
-    path: "meditation"
-  },
-  routine: {
-    icon: Calendar,
-    title: "Распорядок",
-    description: "Ежедневные рутины",
-    path: "routine"
+  kapha: {
+    flavors: ["Pungent", "Bitter", "Astringent"],
+    foodsToEat: {
+      fruits: "Apples, pomegranate, cranberries",
+      vegetables: "Leafy greens, sprouts, bitter gourd",
+      grains: "Quinoa, buckwheat, millet",
+      proteins: "Lentils, chicken, fish"
+    },
+    foodsToAvoid: {
+      fruits: "Bananas, coconut, dates",
+      vegetables: "Sweet potatoes, cucumber, zucchini"
+    },
+    mealTimes: {
+      breakfast: "7:00 AM – 8:00 AM (light breakfast)",
+      lunch: "12:00 PM – 1:00 PM (main meal)",
+      dinner: "5:30 PM – 6:30 PM (very light meal)"
+    },
+    tips: [
+      "Use stimulating spices like black pepper, ginger, and turmeric",
+      "Avoid heavy and oily foods"
+    ]
   }
 };
 
 export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProps) => {
   const navigate = useNavigate();
-
-  const handleNavigate = (category: string) => {
-    navigate(`/chat/${category}?dosha=${dominantDosha}`);
-  };
+  const data = doshaData[dominantDosha];
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-2xl font-serif font-medium text-ayurveda-primary">
-          Рекомендации для вашей доши
-        </h3>
-        <p className="text-ayurveda-text/60">
-          Выберите категорию для получения персонализированных рекомендаций
-        </p>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold uppercase mb-6">
+          {dominantDosha.toUpperCase()} DOSHA
+        </h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Object.entries(recommendationCategories).map(([key, category]) => {
-          const Icon = category.icon;
-          return (
-            <Card
-              key={key}
-              className="group relative overflow-hidden border-ayurveda-accent/20 hover:border-ayurveda-primary/40 transition-colors"
-            >
-              <Button
-                variant="ghost"
-                className="w-full h-full p-6 hover:bg-ayurveda-accent/5"
-                onClick={() => handleNavigate(category.path)}
-              >
-                <div className="flex items-center space-x-4 w-full">
-                  <div className="bg-ayurveda-primary/10 p-3 rounded-full group-hover:bg-ayurveda-primary/20 transition-colors">
-                    <Icon className="h-6 w-6 text-ayurveda-primary" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-medium text-lg">{category.title}</div>
-                    <div className="text-sm text-ayurveda-text/60">
-                      {category.description}
-                    </div>
-                  </div>
-                </div>
-              </Button>
-            </Card>
-          );
-        })}
-      </div>
+      <section>
+        <h3 className="text-xl font-bold mb-4">RECOMMENDATIONS FOR DIET</h3>
+        
+        <div className="mb-6">
+          <h4 className="font-medium mb-2">Flavors to Include</h4>
+          <ul className="list-disc pl-6">
+            {data.flavors.map((flavor, index) => (
+              <li key={index}>{flavor}</li>
+            ))}
+          </ul>
+        </div>
 
-      <div className="text-center text-sm text-ayurveda-text/60 mt-8">
-        Нажмите на категорию для получения подробных рекомендаций
-      </div>
+        <div className="mb-6">
+          <h4 className="font-medium mb-2">Foods to Eat</h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Apple className="h-5 w-5" />
+              <span>Fruits: {data.foodsToEat.fruits}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Leaf className="h-5 w-5" />
+              <span>Vegetables: {data.foodsToEat.vegetables}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Coffee className="h-5 w-5" />
+              <span>Grains: {data.foodsToEat.grains}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Utensils className="h-5 w-5" />
+              <span>Proteins: {data.foodsToEat.proteins}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h4 className="font-medium mb-2">Foods to Avoid</h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Apple className="h-5 w-5 text-red-500" />
+              <span>Fruits: {data.foodsToAvoid.fruits}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Leaf className="h-5 w-5 text-red-500" />
+              <span>Vegetables: {data.foodsToAvoid.vegetables}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-bold mb-4">WHEN TO EAT</h3>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Timer className="h-5 w-5" />
+            <span>Breakfast: {data.mealTimes.breakfast}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Timer className="h-5 w-5" />
+            <span>Lunch: {data.mealTimes.lunch}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Timer className="h-5 w-5" />
+            <span>Dinner: {data.mealTimes.dinner}</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-bold mb-4">ADDITIONAL DIETARY TIPS</h3>
+        <ul className="space-y-2">
+          {data.tips.map((tip, index) => (
+            <li key={index} className="flex items-center gap-2">
+              <Leaf className="h-5 w-5 text-green-600" />
+              <span>{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };
