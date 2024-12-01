@@ -52,14 +52,8 @@ const Index = () => {
     return <DoshaQuiz />;
   }
 
-  const categoryTitle = getCategoryTitle(category || '');
-
   const handleBackToResults = () => {
-    if (hasResults) {
-      navigate(`/chat/dosha?showResults=true`);
-    } else {
-      navigate(`/chat/dosha`);
-    }
+    navigate(`/chat/dosha?showResults=true`);
   };
 
   const handleNavigateToRecommendation = (newCategory: string) => {
@@ -79,13 +73,13 @@ const Index = () => {
         </Button>
       </div>
 
+      <NavigationButtons onNavigate={handleNavigateToRecommendation} />
+      
       {categoryTitle && (
         <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
-          {categoryTitle}
+          {getCategoryTitle(category || '')}
         </h1>
       )}
-      
-      <NavigationButtons onNavigate={handleNavigateToRecommendation} />
       
       {category && <ChatContainer category={category} dosha={dosha} />}
     </div>
