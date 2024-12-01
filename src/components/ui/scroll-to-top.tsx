@@ -31,11 +31,11 @@ export const ScrollToTop = () => {
     <Button
       variant="outline"
       size="icon"
-      className="fixed bottom-8 right-8 z-50 rounded-full shadow-lg bg-white hover:bg-ayurveda-accent/5"
+      className="fixed bottom-8 right-8 z-50 rounded-full shadow-lg bg-white hover:bg-ayurveda-accent/5 w-14 h-14"
       onClick={scrollToTop}
       aria-label="Прокрутить вверх"
     >
-      <ChevronUp className="h-5 w-5" />
+      <ChevronUp className="h-8 w-8" />
     </Button>
   );
 };
