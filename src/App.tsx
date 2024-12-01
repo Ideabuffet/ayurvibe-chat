@@ -49,7 +49,8 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
-          <div className="min-h-screen bg-ayurveda-background">
+          <div className="min-h-screen">
+            <div className="animated-bg" />
             <Header />
             <main>
               <Routes>

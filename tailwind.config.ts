@@ -73,9 +73,15 @@ export default {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "gradient-animation": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         "message-appear": "message-fade-in 0.3s ease-out forwards",
+        "gradient-flow": "gradient-animation 15s ease infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -85,6 +91,10 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-soft': 'linear-gradient(to right, #e0c3fc 0%, #8ec5fc 100%)',
+        'gradient-animated': 'linear-gradient(-45deg, #FAF3E7, #E6D5C7, #D4A373, #C6A760)',
+      },
+      backgroundSize: {
+        'animated': '400% 400%',
       },
     },
   },
