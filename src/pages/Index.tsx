@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ApiKeyInput } from "@/components/ApiKeyInput";
 import { speak } from "@/utils/voiceUtils";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import OpenAI from "openai";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -13,18 +16,32 @@ interface Message {
   timestamp: Date;
 }
 
-const INITIAL_MESSAGE: Message = {
-  content: "Здравствуйте! 🙏 Я ваш Аюрведический консультант. Как я могу вам помочь сегодня?",
-  isAi: true,
-  timestamp: new Date(),
+const getCategoryPrompt = (category: string) => {
+  const prompts: { [key: string]: string } = {
+    dosha: "Я специализируюсь на определении доши. Задавайте вопросы о вашей конституции тела.",
+    herbs: "Я специалист по аюрведическим травам и натуральным средствам.",
+    diet: "Я помогу вам с диетическими рекомендациями согласно Аюрведе.",
+    lifestyle: "Я помогу вам с рекомендациями по образу жизни и йоге.",
+    chronic: "Я специализируюсь на аюрведическом подходе к хроническим заболеваниям.",
+    detox: "Я помогу вам с методами детоксикации и очищения организма.",
+    stress: "Я специализируюсь на управлении стрессом и эмоциональном благополучии.",
+    beauty: "Я помогу вам с натуральным уходом за кожей и волосами.",
+    energy: "Я специализируюсь на энергетическом и духовном балансе.",
+    sleep: "Я помогу вам улучшить качество сна с помощью аюрведических принципов.",
+  };
+  return prompts[category] || "Я ваш Аюрведический консультант. Как я могу вам помочь сегодня?";
 };
 
-const SYSTEM_PROMPT = `Ты - опытный Аюрведический врач. Отвечай на вопросы пользователей о здоровье, основываясь на принципах Аюрведы. 
-Всегда отвечай на русском языке. Будь профессиональным, но дружелюбным. При необходимости напоминай, что твои советы носят информационный характер 
-и не заменяют консультацию с врачом.`;
-
 const Index = () => {
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const { category } = useParams();
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      content: getCategoryPrompt(category || ""),
+      isAi: true,
+      timestamp: new Date(),
+    },
+  ]);
   const { toast } = useToast();
 
   const handleSendMessage = async (content: string) => {
@@ -58,7 +75,12 @@ const Index = () => {
 
       const stream = await openai.chat.completions.create({
         messages: [
-          { role: "system" as const, content: SYSTEM_PROMPT },
+          { 
+            role: "system", 
+            content: `Ты - опытный Аюрведический врач, специализирующийся на теме ${category}. 
+                     Отвечай на вопросы пользователей, основываясь на принципах Аюрведы. 
+                     Всегда отвечай на русском языке. Будь профессиональным, но дружелюбным.` 
+          },
           ...messages.map(msg => ({
             role: msg.isAi ? "assistant" as const : "user" as const,
             content: msg.content
@@ -81,7 +103,6 @@ const Index = () => {
         });
       }
 
-      // Speak the final response
       speak(fullContent);
     } catch (error) {
       toast({
@@ -94,8 +115,18 @@ const Index = () => {
 
   return (
     <div className="flex flex-col h-screen bg-ayurveda-background">
-      <header className="bg-ayurveda-primary text-white p-4 text-center">
-        <h1 className="text-2xl font-semibold">Аюрведическая Мудрость ИИ</h1>
+      <header className="bg-ayurveda-primary text-white p-4 flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white mr-2"
+          onClick={() => navigate("/services")}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-2xl font-semibold flex-1 text-center mr-8">
+          Аюрведическая Мудрость ИИ
+        </h1>
       </header>
 
       <div className="flex-1 container max-w-4xl mx-auto p-4 overflow-y-auto">
