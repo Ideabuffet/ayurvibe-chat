@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { DoshaQuiz } from "@/components/DoshaQuiz";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,198 +6,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ChatMessage } from "@/components/ChatMessage";
-
-const getDoshaRecommendations = (dosha: string, category: string) => {
-  const recommendations = {
-    vata: {
-      nutrition: `Для Ваты рекомендуется:
-
-Основные принципы питания:
-- Теплая, свежеприготовленная пища
-- Сладкие, кислые и соленые вкусы
-- Питательные и маслянистые продукты
-- Регулярное питание в одно и то же время
-
-Рекомендуемые продукты:
-
-Зерновые:
-- Овес
-- Рис (особенно басмати)
-- Пшеница
-- Киноа
-
-Овощи:
-- Морковь
-- Свекла
-- Сладкий картофель
-- Спаржа (приготовленная)
-- Кабачки
-- Тыква
-
-Фрукты:
-- Спелые бананы
-- Авокадо
-- Манго
-- Инжир
-- Финики
-- Кокос
-
-Белки:
-- Мунг-дал
-- Красная чечевица
-- Тофу
-- Орехи (миндаль, грецкие)
-- Семена (тыквенные, подсолнечные)
-
-Молочные продукты:
-- Гхи
-- Молоко теплое
-- Йогурт
-- Сливочное масло
-
-Специи:
-- Имбирь
-- Корица
-- Кардамон
-- Куркума
-- Базилик
-- Шафран`,
-
-      health: "Рекомендации для здоровья Ваты:\n- Регулярный массаж с теплыми маслами\n- Защита от холода и ветра\n- Умеренные физические нагрузки\n- Ранний отход ко сну",
-      meditation: "Практики для Ваты:\n- Спокойная медитация в тихом месте\n- Мягкая йога\n- Дыхательные практики для успокоения\n- Регулярные практики заземления",
-      routine: "Ежедневные рутины для Ваты:\n- Подъем до восхода солнца\n- Масляный массаж (абхьянга)\n- Регулярный режим сна и питания\n- Избегание переутомления"
-    },
-    pitta: {
-      nutrition: `Для Питты рекомендуется:
-
-Основные принципы питания:
-- Прохладная или теплая (но не горячая) пища
-- Сладкие, горькие и вяжущие вкусы
-- Избегание острой и кислой пищи
-- Обильное питье воды
-
-Рекомендуемые продукты:
-
-Зерновые:
-- Ячмень
-- Белый рис
-- Пшеница
-- Овес
-- Амарант
-
-Овощи:
-- Огурцы
-- Брокколи
-- Цветная капуста
-- Зеленые листовые овощи
-- Кабачки
-- Фенхель
-
-Фрукты:
-- Сладкие яблоки
-- Груши
-- Виноград
-- Арбуз
-- Кокос
-- Гранат
-
-Белки:
-- Чечевица
-- Нут
-- Тофу
-- Семена подсолнечника
-- Миндаль (вымоченный)
-
-Молочные продукты:
-- Гхи
-- Свежий творог
-- Несоленый сыр
-- Охлажденное молоко
-
-Специи:
-- Кориандр
-- Фенхель
-- Кардамон
-- Мята
-- Куркума
-- Розмарин`,
-
-      health: "Рекомендации для здоровья Питты:\n- Охлаждающие процедуры\n- Умеренные физические нагрузки в прохладное время\n- Избегание перегрева\n- Регулярный отдых",
-      meditation: "Практики для Питты:\n- Охлаждающее дыхание\n- Медитация при лунном свете\n- Практики прощения\n- Йога с акцентом на расслабление",
-      routine: "Ежедневные рутины для Питты:\n- Прохладный душ утром\n- Прогулки на природе\n- Регулярные перерывы в работе\n- Избегание полуденного солнца"
-    },
-    kapha: {
-      nutrition: `Для Капхи рекомендуется:
-
-Основные принципы питания:
-- Легкая, теплая пища
-- Острые, горькие и вяжущие вкусы
-- Минимум сладкого и жирного
-- Небольшие порции
-
-Рекомендуемые продукты:
-
-Зерновые:
-- Ячмень
-- Просо
-- Гречка
-- Кукуруза
-- Киноа
-
-Овощи:
-- Зеленые листовые овощи
-- Брокколи
-- Сельдерей
-- Морковь
-- Спаржа
-- Редис
-
-Фрукты:
-- Яблоки
-- Гранаты
-- Клюква
-- Хурма
-- Инжир (сушеный)
-- Ягоды
-
-Белки:
-- Чечевица
-- Бобы мунг
-- Нут
-- Тофу (в умеренных количествах)
-- Семена тыквы и подсолнечника
-
-Специи:
-- Имбирь
-- Черный перец
-- Куркума
-- Корица
-- Кардамон
-- Горчичные семена
-
-Травы:
-- Базилик
-- Орегано
-- Тимьян
-- Розмарин
-- Шалфей`,
-
-      health: "Рекомендации для здоровья Капхи:\n- Активные физические упражнения\n- Регулярные очищающие практики\n- Стимулирующий массаж\n- Поддержание активности в течение дня",
-      meditation: "Практики для Капхи:\n- Динамическая медитация\n- Энергичная йога\n- Активные дыхательные практики\n- Практики для повышения энергии",
-      routine: "Ежедневные рутины для Капхи:\n- Ранний подъем\n- Активные упражнения утром\n- Сухой массаж (гарщан)\n- Поддержание активности в течение дня"
-    }
-  };
-
-  return recommendations[dosha as keyof typeof recommendations]?.[category as keyof (typeof recommendations)['vata']] || 
-    "Извините, рекомендации не найдены. Пожалуйста, уточните ваш запрос.";
-};
+import { 
+  Apple, 
+  HeartPulse, 
+  Brain,
+  Calendar,
+  ArrowLeft
+} from "lucide-react";
 
 const Index = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const dosha = searchParams.get('dosha');
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [newMessage, setNewMessage] = useState("");
+
+  const handleNavigateToRecommendation = (newCategory: string) => {
+    navigate(`/chat/${newCategory}?dosha=${dosha}`);
+  };
+
+  const handleBackToResults = () => {
+    navigate(`/chat/dosha`);
+  };
 
   useEffect(() => {
     if (dosha && category && category !== 'dosha') {
@@ -224,7 +55,6 @@ const Index = () => {
       }]);
       setNewMessage("");
       
-      // Add AI response after user message
       setTimeout(() => {
         setMessages(prev => [...prev, {
           content: "Спасибо за ваш вопрос. Как я могу помочь вам более конкретно с учетом вашей доши?",
@@ -237,7 +67,52 @@ const Index = () => {
 
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
-      <Disclaimer />
+      <div className="flex items-center justify-between mb-6">
+        <Button 
+          variant="outline" 
+          onClick={handleBackToResults}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Вернуться к результатам
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <Button 
+          className="w-full bg-white hover:bg-ayurveda-accent/5" 
+          variant="outline"
+          onClick={() => handleNavigateToRecommendation('nutrition')}
+        >
+          <Apple className="mr-2 h-5 w-5 text-ayurveda-primary" />
+          Рекомендации по питанию
+        </Button>
+        <Button 
+          className="w-full bg-white hover:bg-ayurveda-accent/5" 
+          variant="outline"
+          onClick={() => handleNavigateToRecommendation('health')}
+        >
+          <HeartPulse className="mr-2 h-5 w-5 text-ayurveda-primary" />
+          Здоровье и лечение
+        </Button>
+        <Button 
+          className="w-full bg-white hover:bg-ayurveda-accent/5" 
+          variant="outline"
+          onClick={() => handleNavigateToRecommendation('meditation')}
+        >
+          <Brain className="mr-2 h-5 w-5 text-ayurveda-primary" />
+          Практики и медитации
+        </Button>
+        <Button 
+          className="w-full bg-white hover:bg-ayurveda-accent/5" 
+          variant="outline"
+          onClick={() => handleNavigateToRecommendation('routine')}
+        >
+          <Calendar className="mr-2 h-5 w-5 text-ayurveda-primary" />
+          Ежедневные рутины
+        </Button>
+      </div>
+
       <Card className="p-4">
         <div className="space-y-4">
           <div className="space-y-4">
