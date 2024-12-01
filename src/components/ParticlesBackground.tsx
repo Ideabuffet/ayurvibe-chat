@@ -6,7 +6,7 @@ const ParticlesBackground = () => {
           <div key={i} className={`leaf leaf-${i + 1}`} />
         ))}
       </div>
-      <style jsx global>{`
+      <style>{`
         .leaf-container {
           position: fixed;
           top: 0;
