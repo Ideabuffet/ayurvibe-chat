@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Leaf, LeafyGreen, Flower, Flower2, Sprout } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 interface Herb {
   id: string;
@@ -96,6 +97,7 @@ export const HerbalCatalog = () => {
           ))}
         </div>
       </Card>
+      <ScrollToTop />
     </div>
   );
 };

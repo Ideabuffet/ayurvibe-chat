@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Timer, Scroll, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 interface Recipe {
   id: string;
@@ -102,6 +103,7 @@ export const RecipesCatalog = () => {
           ))}
         </div>
       </Card>
+      <ScrollToTop />
     </div>
   );
 };
