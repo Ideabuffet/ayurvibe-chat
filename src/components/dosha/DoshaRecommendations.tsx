@@ -1,4 +1,4 @@
-import { HeartPulse, Brain, Calendar, Apple, Leaf, Utensils, Moon, GitBranch, User, Sun } from "lucide-react";
+import { HeartPulse, Brain, Calendar, Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
@@ -59,55 +59,6 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           >
             <Apple className="h-5 w-5" />
             Подробнее о питании
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('herbs')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <Leaf className="h-5 w-5" />
-            Травяные средства
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('diet')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <Utensils className="h-5 w-5" />
-            Диетические рекомендации
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('lifestyle')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <GitBranch className="h-5 w-5" />
-            Образ жизни
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('chronic')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <HeartPulse className="h-5 w-5" />
-            Хронические заболевания
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('beauty')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <User className="h-5 w-5" />
-            Красота и уход за кожей
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('energy')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <Sun className="h-5 w-5" />
-            Энергия и духовность
-          </Button>
-          <Button 
-            onClick={() => handleNavigate('sleep')}
-            className="w-full h-auto py-6 flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
-          >
-            <Moon className="h-5 w-5" />
-            Улучшение сна
           </Button>
         </div>
 
