@@ -48,6 +48,29 @@ export const DoshaQuiz = () => {
     setSelectedAnswer(null);
   };
 
+  const handleBack = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    } else if (currentSection > 0) {
+      setCurrentSection(currentSection - 1);
+      setCurrentQuestion(doshaQuestions[currentSection - 1].questions.length - 1);
+    }
+    // Set the previously selected answer for this question
+    const previousQuestionId = currentQuestion > 0 
+      ? section.questions[currentQuestion - 1].id
+      : doshaQuestions[currentSection - 1]?.questions[doshaQuestions[currentSection - 1].questions.length - 1].id;
+    
+    const previousAnswer = answers[previousQuestionId];
+    if (previousAnswer) {
+      const answerIndex = question.answers.findIndex(a => 
+        a.vata === previousAnswer.vata && 
+        a.pitta === previousAnswer.pitta && 
+        a.kapha === previousAnswer.kapha
+      );
+      setSelectedAnswer(answerIndex.toString());
+    }
+  };
+
   const calculateResults = (): DoshaScores => {
     const scores = Object.values(answers).reduce(
       (acc, answer) => ({
@@ -117,6 +140,8 @@ export const DoshaQuiz = () => {
     );
   }
 
+  const isFirstQuestion = currentSection === 0 && currentQuestion === 0;
+
   return (
     <div className="space-y-4">
       <Disclaimer />
@@ -138,7 +163,15 @@ export const DoshaQuiz = () => {
                 </div>
               ))}
             </RadioGroup>
-            <div className="pt-4">
+            <div className="pt-4 flex gap-4">
+              <Button 
+                onClick={handleBack}
+                disabled={isFirstQuestion}
+                variant="outline"
+                className="w-full"
+              >
+                Назад
+              </Button>
               <Button 
                 onClick={handleNext}
                 disabled={!selectedAnswer}
