@@ -16,6 +16,7 @@ import {
   CircleDot
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { DoshaScores, DoshaType } from "@/types/dosha";
 
 export const DoshaQuiz = () => {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ export const DoshaQuiz = () => {
     return scores;
   };
 
-  const getDominantDosha = (scores: DoshaScores) => {
+  const getDominantDosha = (scores: DoshaScores): DoshaType => {
     const max = Math.max(scores.vata, scores.pitta, scores.kapha);
     if (scores.vata === max) return "vata";
     if (scores.pitta === max) return "pitta";
@@ -104,7 +105,7 @@ export const DoshaQuiz = () => {
   if (showResults) {
     const scores = calculateResults();
     const dominantDosha = getDominantDosha(scores);
-    const doshaNames = {
+    const doshaNames: Record<DoshaType, string> = {
       vata: "Вата",
       pitta: "Питта",
       kapha: "Капха"
@@ -127,13 +128,15 @@ export const DoshaQuiz = () => {
             <div className="space-y-4 mt-8">
               <p className="text-lg font-medium">Распределение баллов:</p>
               <div className="space-y-4">
-                {Object.entries(scores).map(([dosha, score]) => (
+                {(Object.entries(scores) as [DoshaType, number][]).map(([dosha, score]) => (
                   <div key={dosha} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>{doshaNames[dosha as keyof typeof doshaNames]}</span>
+                      <span>{doshaNames[dosha]}</span>
                       <span>{score}</span>
                     </div>
-                    <Progress value={(score / Object.values(scores).reduce((a, b) => a + b, 0)) * 100} />
+                    <Progress 
+                      value={(score / Object.values(scores).reduce((a, b) => a + b, 0)) * 100} 
+                    />
                   </div>
                 ))}
               </div>
