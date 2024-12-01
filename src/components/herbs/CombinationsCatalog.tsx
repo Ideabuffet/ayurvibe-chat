@@ -15,6 +15,7 @@ interface Combination {
   instructions: string;
   benefits: string;
   contraindications: string | null;
+  proportions: string;
 }
 
 const getCombinationIcon = (index: number) => {
@@ -85,6 +86,10 @@ export const CombinationsCatalog = () => {
                 <div>
                   <h4 className="font-semibold text-ayurveda-text mb-2">Травы в составе:</h4>
                   <p className="text-gray-700">{combination.herbs}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-ayurveda-text mb-2">Пропорции:</h4>
+                  <p className="text-gray-700">{combination.proportions}</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-ayurveda-text mb-2">Инструкция по применению:</h4>

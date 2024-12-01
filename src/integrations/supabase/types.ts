@@ -19,6 +19,7 @@ export type Database = {
           id: string
           instructions: string
           name: string
+          proportions: string
           purpose: string
         }
         Insert: {
@@ -30,6 +31,7 @@ export type Database = {
           id?: string
           instructions: string
           name: string
+          proportions?: string
           purpose: string
         }
         Update: {
@@ -41,6 +43,7 @@ export type Database = {
           id?: string
           instructions?: string
           name?: string
+          proportions?: string
           purpose?: string
         }
         Relationships: []
