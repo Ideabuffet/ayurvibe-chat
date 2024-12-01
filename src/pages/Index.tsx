@@ -31,6 +31,7 @@ const Index = () => {
   const dosha = (doshaParam as DoshaType) || 'vata';
   const [hasResults, setHasResults] = useState(false);
   const categoryTitle = getCategoryTitle(category || '');
+  const isDoshaRelated = doshaParam !== null;
 
   useEffect(() => {
     const checkDoshaResults = async () => {
@@ -63,23 +64,27 @@ const Index = () => {
 
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
-      <div className="flex items-center justify-between mb-6">
-        <Button 
-          variant="outline" 
-          onClick={handleBackToResults}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Вернуться к результатам
-        </Button>
-      </div>
+      {isDoshaRelated && (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <Button 
+              variant="outline" 
+              onClick={handleBackToResults}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Вернуться к результатам
+            </Button>
+          </div>
 
-      <NavigationButtons 
-        onNavigate={handleNavigateToRecommendation} 
-        currentCategory={category}
-      />
+          <NavigationButtons 
+            onNavigate={handleNavigateToRecommendation} 
+            currentCategory={category}
+          />
+        </>
+      )}
       
-      {categoryTitle && (
+      {categoryTitle && isDoshaRelated && (
         <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
           {categoryTitle}
         </h1>
