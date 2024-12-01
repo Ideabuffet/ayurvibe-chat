@@ -90,7 +90,7 @@ const Medicine = () => {
                 <FormItem>
                   <FormLabel>Телефон</FormLabel>
                   <FormControl>
-                    <Input placeholder="+7 (999) 999-99-99" {...field} />
+                    <Input placeholder="+34 XXX XXX XXX" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
