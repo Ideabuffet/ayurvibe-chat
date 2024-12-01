@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Mic, MicOff } from "lucide-react";
+import { startSpeechRecognition } from "@/utils/voiceUtils";
+import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -7,12 +9,36 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
   const [message, setMessage] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
       onSendMessage(message);
       setMessage("");
+    }
+  };
+
+  const toggleVoiceInput = () => {
+    if (isListening) {
+      recognition?.stop();
+      setIsListening(false);
+      setRecognition(null);
+    } else {
+      const newRecognition = startSpeechRecognition(
+        (text) => {
+          setMessage(text);
+        },
+        () => {
+          setIsListening(false);
+          setRecognition(null);
+        }
+      );
+      if (newRecognition) {
+        setRecognition(newRecognition);
+        setIsListening(true);
+      }
     }
   };
 
@@ -28,12 +54,18 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
         placeholder="Задайте ваш вопрос по Аюрведе..."
         className="flex-1 p-2 rounded-lg border border-ayurveda-accent/30 focus:outline-none focus:border-ayurveda-primary"
       />
-      <button
-        type="submit"
-        className="bg-ayurveda-primary text-white p-2 rounded-lg hover:bg-ayurveda-primary/90 transition-colors"
+      <Button
+        type="button"
+        onClick={toggleVoiceInput}
+        variant="outline"
+        size="icon"
+        className={isListening ? "bg-red-100" : ""}
       >
+        {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+      </Button>
+      <Button type="submit" size="icon">
         <Send size={20} />
-      </button>
+      </Button>
     </form>
   );
 };

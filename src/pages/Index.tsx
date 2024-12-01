@@ -3,6 +3,7 @@ import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ApiKeyInput } from "@/components/ApiKeyInput";
+import { speak } from "@/utils/voiceUtils";
 import OpenAI from "openai";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -48,7 +49,6 @@ const Index = () => {
     try {
       const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
       
-      // Create a new AI message with empty content
       const aiMessage: Message = {
         content: "",
         isAi: true,
@@ -74,13 +74,15 @@ const Index = () => {
         const content = chunk.choices[0]?.delta?.content || "";
         fullContent += content;
         
-        // Update the last message with the accumulated content
         setMessages((prev) => {
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content = fullContent;
           return newMessages;
         });
       }
+
+      // Speak the final response
+      speak(fullContent);
     } catch (error) {
       toast({
         title: "Ошибка",
