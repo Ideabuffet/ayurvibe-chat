@@ -1,11 +1,13 @@
 import { Book, ScrollText, GitBranch, Lightbulb } from "lucide-react";
 import { ServiceButton } from "@/components/ServiceButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { Card } from "@/components/ui/card";
+import { HerbalCatalog } from "./HerbalCatalog";
 
 export const HerbalSection = () => {
   const navigate = useNavigate();
+  const { subcategory } = useParams();
 
   const herbalServices = [
     {
@@ -52,9 +54,13 @@ export const HerbalSection = () => {
         ))}
       </div>
 
-      <Card className="p-4">
-        <ChatContainer category="herbs" dosha="vata" />
-      </Card>
+      {subcategory === 'base' ? (
+        <HerbalCatalog />
+      ) : (
+        <Card className="p-4">
+          <ChatContainer category="herbs" dosha="vata" />
+        </Card>
+      )}
     </div>
   );
 };
