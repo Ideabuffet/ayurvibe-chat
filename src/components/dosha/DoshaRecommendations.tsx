@@ -9,10 +9,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionDialog } from "../SubscriptionDialog";
 import { useToast } from "@/components/ui/use-toast";
-import { ServiceButton } from "../ServiceButton";
 import { premiumFeatures } from "@/constants/premiumFeatures";
 
-const RecommendationsGrid = ({ hasActiveSubscription, handleNavigate }) => {
+const RecommendationsGrid = ({ hasActiveSubscription, handleNavigate }: { 
+  hasActiveSubscription: boolean;
+  handleNavigate: (category: string) => void;
+}) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <Button 
@@ -145,7 +147,6 @@ export const DoshaRecommendations = ({ dominantDosha }: { dominantDosha: DoshaTy
           return;
         }
         
-        // Check if user has any active subscription
         setHasActiveSubscription(subscriptions?.some(sub => sub.is_active) ?? false);
       }
     };
