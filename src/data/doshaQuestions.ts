@@ -423,7 +423,7 @@ export const doshaQuestions: Section[] = [
             kapha: 0,
           },
           {
-            text: "Большой, округлый, bulbous",
+            text: "Большой, округлый, луковичный",
             vata: 0,
             pitta: 0,
             kapha: 2,
