@@ -77,7 +77,24 @@
   }
 }
 
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
 /* Card hover effects */
 .hover-card {
   @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-soft {
+  background: linear-gradient(to right, #e0c3fc 0%, #8ec5fc 100%);
+}
+
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-stops));
 }
