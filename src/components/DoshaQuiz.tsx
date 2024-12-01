@@ -54,7 +54,7 @@ export const DoshaQuiz = () => {
     .reduce((acc, section) => acc + section.questions.length, 0) + currentQuestion + 1;
   const progress = (currentQuestionNumber / totalQuestions) * 100;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!selectedAnswer) return;
 
     const answer = question.answers[parseInt(selectedAnswer)];
@@ -69,7 +69,21 @@ export const DoshaQuiz = () => {
       setCurrentSection(currentSection + 1);
       setCurrentQuestion(0);
     } else {
+      const scores = calculateResults();
+      const dominantDosha = getDominantDosha(scores);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        await supabase
+          .from('profiles')
+          .update({ dosha: dominantDosha })
+          .eq('id', session.user.id);
+      }
+      
+      setSavedDosha(dominantDosha);
+      setSavedScores(scores);
       setShowingResults(true);
+      navigate(`/chat/dosha?showResults=true`);
     }
     setSelectedAnswer(null);
   };
