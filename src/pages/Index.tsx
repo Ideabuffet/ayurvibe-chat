@@ -51,20 +51,26 @@ const Index = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
+      // Add user message
       setMessages(prev => [...prev, {
         content: newMessage,
         isAi: false,
         timestamp: new Date()
       }]);
-      setNewMessage("");
       
+      // Generate direct response based on dosha type and category
+      const response = `Based on your ${dosha} dosha type, here are specific recommendations regarding your question about ${category}: ${getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine')}`;
+      
+      // Add AI response after a short delay
       setTimeout(() => {
         setMessages(prev => [...prev, {
-          content: "Спасибо за ваш вопрос. Как я могу помочь вам более конкретно с учетом вашей доши?",
+          content: response,
           isAi: true,
           timestamp: new Date()
         }]);
-      }, 1000);
+      }, 500);
+      
+      setNewMessage("");
     }
   };
 
