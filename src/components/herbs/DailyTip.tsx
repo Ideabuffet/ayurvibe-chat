@@ -32,7 +32,6 @@ export const DailyTip = () => {
     <ChatContainer 
       category="herbs" 
       dosha="vata"
-      onRefresh={generateNewTip}
     />
   );
 };
