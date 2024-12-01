@@ -1,4 +1,4 @@
-import { Book, ScrollText, GitBranch, Lightbulb } from "lucide-react";
+import { Book, ScrollText, GitBranch } from "lucide-react";
 import { ServiceButton } from "@/components/ServiceButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContainer } from "@/components/chat/ChatContainer";
@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card";
 import { HerbalCatalog } from "./HerbalCatalog";
 import { RecipesCatalog } from "./RecipesCatalog";
 import { CombinationsCatalog } from "./CombinationsCatalog";
-import { DailyTip } from "./DailyTip";
 
 export const HerbalSection = () => {
   const navigate = useNavigate();
@@ -33,13 +32,6 @@ export const HerbalSection = () => {
       label: "Травяные комбинации",
       color: "#8B9D83",
       path: "/chat/herbs/combinations"
-    },
-    {
-      id: "tip",
-      icon: Lightbulb,
-      label: "Совет дня",
-      color: "#C6A760",
-      path: "/chat/herbs/tip"
     }
   ];
 
@@ -64,8 +56,6 @@ export const HerbalSection = () => {
         <RecipesCatalog />
       ) : subcategory === 'combinations' ? (
         <CombinationsCatalog />
-      ) : subcategory === 'tip' ? (
-        <DailyTip />
       ) : (
         <Card className="p-4">
           <ChatContainer category="herbs" dosha="vata" />

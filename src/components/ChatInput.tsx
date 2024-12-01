@@ -1,19 +1,17 @@
 import { useState, KeyboardEvent } from "react";
-import { Send, Mic, MicOff, RefreshCw } from "lucide-react";
+import { Send, Mic, MicOff } from "lucide-react";
 import { startSpeechRecognition } from "@/utils/voiceUtils";
 import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
-  onRefresh?: () => Promise<void>;
 }
 
-export const ChatInput = ({ onSendMessage, disabled = false, onRefresh }: ChatInputProps) => {
+export const ChatInput = ({ onSendMessage, disabled = false }: ChatInputProps) => {
   const [message, setMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,17 +27,6 @@ export const ChatInput = ({ onSendMessage, disabled = false, onRefresh }: ChatIn
       if (message.trim()) {
         onSendMessage(message);
         setMessage("");
-      }
-    }
-  };
-
-  const handleRefresh = async () => {
-    if (onRefresh && !isRefreshing) {
-      setIsRefreshing(true);
-      try {
-        await onRefresh();
-      } finally {
-        setIsRefreshing(false);
       }
     }
   };
@@ -80,18 +67,6 @@ export const ChatInput = ({ onSendMessage, disabled = false, onRefresh }: ChatIn
         className="flex-1 p-2 rounded-lg border border-ayurveda-accent/30 focus:outline-none focus:border-ayurveda-primary"
         disabled={disabled}
       />
-      {onRefresh && (
-        <Button
-          type="button"
-          onClick={handleRefresh}
-          variant="outline"
-          size="icon"
-          disabled={disabled || isRefreshing}
-          className={isRefreshing ? "animate-spin" : ""}
-        >
-          <RefreshCw size={20} />
-        </Button>
-      )}
       <Button
         type="button"
         onClick={toggleVoiceInput}

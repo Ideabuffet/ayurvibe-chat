@@ -9,7 +9,6 @@ import { DoshaType } from "@/types/dosha";
 interface ChatContainerProps {
   category: string;
   dosha: DoshaType;
-  onRefresh?: () => Promise<void>;
 }
 
 const getRandomHerbalIntro = () => {
@@ -23,7 +22,7 @@ const getRandomHerbalIntro = () => {
   return intros[Math.floor(Math.random() * intros.length)];
 };
 
-export const ChatContainer = ({ category, dosha, onRefresh }: ChatContainerProps) => {
+export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -162,7 +161,6 @@ export const ChatContainer = ({ category, dosha, onRefresh }: ChatContainerProps
         <ChatInput 
           onSendMessage={handleSendMessage} 
           disabled={isTyping || isInitializing} 
-          onRefresh={onRefresh}
         />
       </div>
     </Card>
