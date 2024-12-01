@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Leaf, LeafyGreen, Flower, Flower2, Plant, Sprout } from "lucide-react";
+import { ArrowLeft, Leaf, LeafyGreen, Flower, Flower2, Sprout, Seedling } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Herb {
@@ -17,7 +17,7 @@ interface Herb {
 
 const getHerbIcon = (herbName: string) => {
   // Rotate through available icons based on herb name length to distribute them evenly
-  const icons = [Leaf, LeafyGreen, Flower, Flower2, Plant, Sprout];
+  const icons = [Leaf, LeafyGreen, Flower, Flower2, Sprout, Seedling];
   const index = herbName.length % icons.length;
   const IconComponent = icons[index];
   return <IconComponent className="w-16 h-16 text-ayurveda-primary" strokeWidth={1.5} />;
