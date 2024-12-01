@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Send, Mic, MicOff } from "lucide-react";
 import { startSpeechRecognition } from "@/utils/voiceUtils";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,16 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
     if (message.trim()) {
       onSendMessage(message);
       setMessage("");
+    }
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (message.trim()) {
+        onSendMessage(message);
+        setMessage("");
+      }
     }
   };
 
@@ -51,6 +61,7 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
         placeholder="Задайте ваш вопрос по Аюрведе..."
         className="flex-1 p-2 rounded-lg border border-ayurveda-accent/30 focus:outline-none focus:border-ayurveda-primary"
       />

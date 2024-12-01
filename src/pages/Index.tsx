@@ -2,10 +2,9 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { DoshaQuiz } from "@/components/DoshaQuiz";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect } from "react";
-import { Disclaimer } from "@/components/Disclaimer";
+import { useState, useEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
+import { ChatInput } from "@/components/ChatInput";
 import { getDoshaRecommendations } from "@/utils/doshaRecommendations";
 import { DoshaType } from "@/types/dosha";
 import { 
@@ -16,6 +15,24 @@ import {
   ArrowLeft
 } from "lucide-react";
 
+const generateAIResponse = (message: string, dosha: DoshaType, category: string) => {
+  // Базовые знания об Аюрведе для разных категорий
+  const ayurvedaKnowledge = {
+    nutrition: "питании, диете, правильном приеме пищи, специях и травах",
+    health: "здоровье, лечении, профилактике заболеваний, балансе дош",
+    meditation: "медитации, духовных практиках, йоге, пранаяме",
+    routine: "ежедневных практиках, режиме дня, сезонных рекомендациях"
+  };
+
+  // Генерация персонализированного ответа
+  const baseResponse = `На основе принципов Аюрведы и учитывая вашу ${dosha} дошу, а также ваш вопрос о ${ayurvedaKnowledge[category as keyof typeof ayurvedaKnowledge]}, могу сказать следующее:\n\n`;
+  
+  // Добавление специфичных рекомендаций
+  const specificRecommendations = getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine');
+  
+  return baseResponse + specificRecommendations;
+};
+
 const Index = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
@@ -23,7 +40,16 @@ const Index = () => {
   const doshaParam = searchParams.get('dosha');
   const dosha = (doshaParam as DoshaType) || 'vata';
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleNavigateToRecommendation = (newCategory: string) => {
     navigate(`/chat/${newCategory}?dosha=${dosha}`);
@@ -44,34 +70,54 @@ const Index = () => {
     }
   }, [dosha, category]);
 
+  const simulateTyping = (response: string) => {
+    setIsTyping(true);
+    
+    // Разбиваем ответ на части для имитации печати
+    const words = response.split(' ');
+    let currentResponse = '';
+    let wordIndex = 0;
+    
+    const typingInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        currentResponse += words[wordIndex] + ' ';
+        setMessages(prev => {
+          const newMessages = [...prev];
+          if (newMessages[newMessages.length - 1]?.isAi) {
+            newMessages[newMessages.length - 1].content = currentResponse;
+          } else {
+            newMessages.push({
+              content: currentResponse,
+              isAi: true,
+              timestamp: new Date()
+            });
+          }
+          return newMessages;
+        });
+        wordIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setIsTyping(false);
+      }
+    }, 100); // Скорость "печати"
+  };
+
+  const handleSendMessage = (message: string) => {
+    // Добавляем сообщение пользователя
+    setMessages(prev => [...prev, {
+      content: message,
+      isAi: false,
+      timestamp: new Date()
+    }]);
+    
+    // Генерируем и добавляем ответ ИИ
+    const response = generateAIResponse(message, dosha, category || 'routine');
+    simulateTyping(response);
+  };
+
   if (category === "dosha") {
     return <DoshaQuiz />;
   }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newMessage.trim()) {
-      setMessages(prev => [...prev, {
-        content: newMessage,
-        isAi: false,
-        timestamp: new Date()
-      }]);
-      
-      const response = `Учитывая вашу дошу ${dosha}, отвечаю на ваш вопрос "${newMessage}": 
-      
-${getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine')}`;
-      
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          content: response,
-          isAi: true,
-          timestamp: new Date()
-        }]);
-      }, 500);
-      
-      setNewMessage("");
-    }
-  };
 
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
@@ -123,7 +169,7 @@ ${getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditatio
 
       <Card className="p-4">
         <div className="space-y-4">
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[500px] overflow-y-auto">
             {messages.map((message, index) => (
               <ChatMessage
                 key={index}
@@ -132,18 +178,9 @@ ${getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditatio
                 timestamp={message.timestamp}
               />
             ))}
+            <div ref={messagesEndRef} />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Textarea
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Введите ваш вопрос..."
-              className="min-h-[100px]"
-            />
-            <Button type="submit" className="w-full">
-              Отправить
-            </Button>
-          </form>
+          <ChatInput onSendMessage={handleSendMessage} />
         </div>
       </Card>
     </div>
