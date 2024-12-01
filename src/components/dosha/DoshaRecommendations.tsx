@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
 import { Card } from "@/components/ui/card";
+import { ChatContainer } from "@/components/chat/ChatContainer";
+import { NavigationButtons } from "@/components/chat/NavigationButtons";
 
 interface DoshaRecommendationsProps {
   dominantDosha: DoshaType;
@@ -10,69 +12,69 @@ interface DoshaRecommendationsProps {
 
 const doshaData = {
   vata: {
-    flavors: ["Sweet", "Sour", "Salty"],
+    flavors: ["Сладкий", "Кислый", "Соленый"],
     foodsToEat: {
-      fruits: "Bananas, mangoes, figs",
-      vegetables: "Sweet potatoes, carrots, beets",
-      grains: "Rice, oatmeal, quinoa",
-      proteins: "Lentils, tofu, eggs"
+      fruits: "Бананы, манго, инжир",
+      vegetables: "Сладкий картофель, морковь, свекла",
+      grains: "Рис, овсянка, киноа",
+      proteins: "Чечевица, тофу, яйца"
     },
     foodsToAvoid: {
-      fruits: "Apples, pears (avoid raw)",
-      vegetables: "Raw salads, cabbage, broccoli"
+      fruits: "Яблоки, груши (в сыром виде)",
+      vegetables: "Сырые салаты, капуста, брокколи"
     },
     mealTimes: {
-      breakfast: "7:00 AM – 8:30 AM (warm, nourishing foods)",
-      lunch: "12:00 PM – 1:30 PM (heaviest meal of the day)",
-      dinner: "6:00 PM – 7:30 PM (light and easily digestible)"
+      breakfast: "7:00 – 8:30 (теплая, питательная пища)",
+      lunch: "12:00 – 13:30 (самый плотный прием пищи)",
+      dinner: "18:00 – 19:30 (легкая и легко усваиваемая)"
     },
     tips: [
-      "Use warming spices like cinnamon, cardamom, and ginger in your meals",
-      "Avoid cold drinks and ice"
+      "Используйте согревающие специи как корица, кардамон и имбирь",
+      "Избегайте холодных напитков и льда"
     ]
   },
   pitta: {
-    flavors: ["Sweet", "Bitter", "Astringent"],
+    flavors: ["Сладкий", "Горький", "Вяжущий"],
     foodsToEat: {
-      fruits: "Sweet apples, sweet pears, dates",
-      vegetables: "Cucumber, leafy greens, zucchini",
-      grains: "Barley, wheat, white rice",
-      proteins: "Mung beans, tofu, white meat"
+      fruits: "Сладкие яблоки, сладкие груши, финики",
+      vegetables: "Огурцы, листовая зелень, цуккини",
+      grains: "Ячмень, пшеница, белый рис",
+      proteins: "Маш, тофу, белое мясо"
     },
     foodsToAvoid: {
-      fruits: "Sour fruits, citrus",
-      vegetables: "Hot peppers, garlic, onions"
+      fruits: "Кислые фрукты, цитрусовые",
+      vegetables: "Острый перец, чеснок, лук"
     },
     mealTimes: {
-      breakfast: "6:30 AM – 8:00 AM (cool, refreshing foods)",
-      lunch: "12:00 PM – 1:00 PM (main meal)",
-      dinner: "6:00 PM – 7:00 PM (light meal)"
+      breakfast: "6:30 – 8:00 (прохладная, освежающая пища)",
+      lunch: "12:00 – 13:00 (основной прием пищи)",
+      dinner: "18:00 – 19:00 (легкий ужин)"
     },
     tips: [
-      "Use cooling spices like coriander, fennel, and mint",
-      "Avoid spicy and fermented foods"
+      "Используйте охлаждающие специи как кориандр, фенхель и мята",
+      "Избегайте острой и ферментированной пищи"
     ]
   },
   kapha: {
-    flavors: ["Pungent", "Bitter", "Astringent"],
+    flavors: ["Острый", "Горький", "Вяжущий"],
     foodsToEat: {
-      fruits: "Apples, pomegranate, cranberries",
-      vegetables: "Leafy greens, sprouts, bitter gourd",
-      grains: "Quinoa, buckwheat, millet",
-      proteins: "Lentils, chicken, fish"
+      fruits: "Яблоки, гранат, клюква",
+      vegetables: "Листовая зелень, проростки, горькая тыква",
+      grains: "Киноа, гречка, пшено",
+      proteins: "Чечевица, курица, рыба"
     },
     foodsToAvoid: {
-      fruits: "Bananas, coconut, dates",
-      vegetables: "Sweet potatoes, cucumber, zucchini"
+      fruits: "Бананы, кокос, финики",
+      vegetables: "Сладкий картофель, огурцы, цуккини"
     },
     mealTimes: {
-      breakfast: "7:00 AM – 8:00 AM (light breakfast)",
-      lunch: "12:00 PM – 1:00 PM (main meal)",
-      dinner: "5:30 PM – 6:30 PM (very light meal)"
+      breakfast: "7:00 – 8:00 (легкий завтрак)",
+      lunch: "12:00 – 13:00 (основной прием пищи)",
+      dinner: "17:30 – 18:30 (очень легкий ужин)"
     },
     tips: [
-      "Use stimulating spices like black pepper, ginger, and turmeric",
-      "Avoid heavy and oily foods"
+      "Используйте стимулирующие специи как черный перец, имбирь и куркума",
+      "Избегайте тяжелой и жирной пищи"
     ]
   }
 };
@@ -81,22 +83,26 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
   const navigate = useNavigate();
   const data = doshaData[dominantDosha];
 
+  const handleNavigate = (category: string) => {
+    navigate(`/chat/${category}?dosha=${dominantDosha}`);
+  };
+
   return (
     <div className="space-y-8 p-6 bg-white/80 backdrop-blur rounded-lg">
       <div className="text-center border-b pb-4">
         <h2 className="text-3xl font-bold tracking-wide text-ayurveda-primary">
-          {dominantDosha.toUpperCase()} DOSHA
+          {dominantDosha.toUpperCase()} ДОША
         </h2>
       </div>
 
       <section className="space-y-6">
         <h3 className="text-2xl font-bold text-ayurveda-primary border-b pb-2">
-          RECOMMENDATIONS FOR DIET
+          РЕКОМЕНДАЦИИ ПО ПИТАНИЮ
         </h3>
         
         <div className="space-y-4">
           <div>
-            <h4 className="text-xl font-semibold mb-3">Flavors to Include</h4>
+            <h4 className="text-xl font-semibold mb-3">Рекомендуемые вкусы</h4>
             <ul className="list-none space-y-2">
               {data.flavors.map((flavor, index) => (
                 <li key={index} className="flex items-center gap-2">
@@ -108,37 +114,37 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold mb-3">Foods to Eat</h4>
+            <h4 className="text-xl font-semibold mb-3">Рекомендуемые продукты</h4>
             <div className="grid gap-3">
               <div className="flex items-center gap-2">
                 <Apple className="h-5 w-5 text-ayurveda-primary" />
-                <span>Fruits: {data.foodsToEat.fruits}</span>
+                <span>Фрукты: {data.foodsToEat.fruits}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Palette className="h-5 w-5 text-ayurveda-primary" />
-                <span>Vegetables: {data.foodsToEat.vegetables}</span>
+                <span>Овощи: {data.foodsToEat.vegetables}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Coffee className="h-5 w-5 text-ayurveda-primary" />
-                <span>Grains: {data.foodsToEat.grains}</span>
+                <span>Крупы: {data.foodsToEat.grains}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-ayurveda-primary" />
-                <span>Proteins: {data.foodsToEat.proteins}</span>
+                <span>Белки: {data.foodsToEat.proteins}</span>
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold mb-3">Foods to Avoid</h4>
+            <h4 className="text-xl font-semibold mb-3">Продукты, которых следует избегать</h4>
             <div className="grid gap-3">
               <div className="flex items-center gap-2 text-red-500">
                 <Apple className="h-5 w-5" />
-                <span>Fruits: {data.foodsToAvoid.fruits}</span>
+                <span>Фрукты: {data.foodsToAvoid.fruits}</span>
               </div>
               <div className="flex items-center gap-2 text-red-500">
                 <Palette className="h-5 w-5" />
-                <span>Vegetables: {data.foodsToAvoid.vegetables}</span>
+                <span>Овощи: {data.foodsToAvoid.vegetables}</span>
               </div>
             </div>
           </div>
@@ -147,27 +153,27 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
 
       <section className="space-y-4">
         <h3 className="text-2xl font-bold text-ayurveda-primary border-b pb-2">
-          WHEN TO EAT
+          ВРЕМЯ ПРИЕМА ПИЩИ
         </h3>
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Timer className="h-5 w-5 text-ayurveda-primary" />
-            <span>Breakfast: {data.mealTimes.breakfast}</span>
+            <span>Завтрак: {data.mealTimes.breakfast}</span>
           </div>
           <div className="flex items-center gap-2">
             <Timer className="h-5 w-5 text-ayurveda-primary" />
-            <span>Lunch: {data.mealTimes.lunch}</span>
+            <span>Обед: {data.mealTimes.lunch}</span>
           </div>
           <div className="flex items-center gap-2">
             <Timer className="h-5 w-5 text-ayurveda-primary" />
-            <span>Dinner: {data.mealTimes.dinner}</span>
+            <span>Ужин: {data.mealTimes.dinner}</span>
           </div>
         </div>
       </section>
 
       <section className="space-y-4">
         <h3 className="text-2xl font-bold text-ayurveda-primary border-b pb-2">
-          ADDITIONAL DIETARY TIPS
+          ДОПОЛНИТЕЛЬНЫЕ СОВЕТЫ ПО ПИТАНИЮ
         </h3>
         <ul className="space-y-3">
           {data.tips.map((tip, index) => (
@@ -178,6 +184,43 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
           ))}
         </ul>
       </section>
+
+      <div className="mt-8 space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Button 
+            onClick={() => handleNavigate('health')}
+            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <HeartPulse className="h-5 w-5" />
+            Рекомендации по здоровью
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('meditation')}
+            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Brain className="h-5 w-5" />
+            Медитации и практики
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('routine')}
+            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Calendar className="h-5 w-5" />
+            Режим дня
+          </Button>
+          <Button 
+            onClick={() => handleNavigate('nutrition')}
+            className="flex items-center gap-2 bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            <Apple className="h-5 w-5" />
+            Подробнее о питании
+          </Button>
+        </div>
+
+        <Card className="p-4">
+          <ChatContainer category="dosha" dosha={dominantDosha} />
+        </Card>
+      </div>
     </div>
   );
 };
