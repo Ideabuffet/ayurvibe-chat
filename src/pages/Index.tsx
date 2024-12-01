@@ -2,10 +2,24 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { DoshaQuiz } from "@/components/DoshaQuiz";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { ApiKeyInput } from "@/components/ApiKeyInput";
 import { DoshaType } from "@/types/dosha";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { NavigationButtons } from "@/components/chat/NavigationButtons";
+
+const getCategoryTitle = (category: string): string => {
+  switch (category) {
+    case 'nutrition':
+      return 'Рекомендации по питанию';
+    case 'health':
+      return 'Здоровье и лечение';
+    case 'meditation':
+      return 'Практики и медитации';
+    case 'routine':
+      return 'Ежедневные рутины';
+    default:
+      return '';
+  }
+};
 
 const Index = () => {
   const { category } = useParams();
@@ -26,6 +40,8 @@ const Index = () => {
     return <DoshaQuiz />;
   }
 
+  const categoryTitle = getCategoryTitle(category || '');
+
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
       <div className="flex items-center justify-between mb-6">
@@ -39,7 +55,11 @@ const Index = () => {
         </Button>
       </div>
 
-      <ApiKeyInput />
+      {categoryTitle && (
+        <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
+          {categoryTitle}
+        </h1>
+      )}
       
       <NavigationButtons onNavigate={handleNavigateToRecommendation} />
       

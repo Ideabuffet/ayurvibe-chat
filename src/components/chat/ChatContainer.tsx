@@ -28,11 +28,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
 
   useEffect(() => {
     const initializeChat = async () => {
-      if (!localStorage.getItem("openai_api_key")) {
-        setIsInitializing(false);
-        return;
-      }
-
       if (dosha && category && category !== 'dosha') {
         setIsInitializing(true);
         try {
@@ -95,15 +90,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   };
 
   const handleSendMessage = async (message: string) => {
-    if (!localStorage.getItem("openai_api_key")) {
-      toast({
-        title: "Ошибка",
-        description: "Пожалуйста, сначала введите ваш API ключ OpenAI",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (isTyping) {
       toast({
         title: "Подождите",
