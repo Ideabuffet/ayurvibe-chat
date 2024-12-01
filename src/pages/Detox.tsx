@@ -77,7 +77,7 @@ const Detox = () => {
             </div>
             <div>
               <p className="text-2xl font-bold text-ayurveda-primary mb-4">
-                19,900 ₽
+                $299
               </p>
               <Button 
                 onClick={handlePurchase}
