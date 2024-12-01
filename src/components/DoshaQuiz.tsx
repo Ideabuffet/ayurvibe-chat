@@ -1,0 +1,112 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { doshaQuestions, type Answer } from "@/data/doshaQuestions";
+import { Disclaimer } from "./Disclaimer";
+
+type DoshaScores = {
+  vata: number;
+  pitta: number;
+  kapha: number;
+};
+
+export const DoshaQuiz = () => {
+  const [currentSection, setCurrentSection] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const [showResults, setShowResults] = useState(false);
+
+  const section = doshaQuestions[currentSection];
+  const question = section?.questions[currentQuestion];
+
+  const handleAnswer = (answer: Answer) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [question.id]: answer,
+    }));
+
+    if (currentQuestion < section.questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else if (currentSection < doshaQuestions.length - 1) {
+      setCurrentSection(currentSection + 1);
+      setCurrentQuestion(0);
+    } else {
+      setShowResults(true);
+    }
+  };
+
+  const calculateResults = (): DoshaScores => {
+    const scores = Object.values(answers).reduce(
+      (acc, answer) => ({
+        vata: acc.vata + answer.vata,
+        pitta: acc.pitta + answer.pitta,
+        kapha: acc.kapha + answer.kapha,
+      }),
+      { vata: 0, pitta: 0, kapha: 0 }
+    );
+    return scores;
+  };
+
+  const getDominantDosha = (scores: DoshaScores) => {
+    const max = Math.max(scores.vata, scores.pitta, scores.kapha);
+    if (scores.vata === max) return "Вата";
+    if (scores.pitta === max) return "Питта";
+    return "Капха";
+  };
+
+  if (showResults) {
+    const scores = calculateResults();
+    const dominantDosha = getDominantDosha(scores);
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Ваш результат</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-lg font-medium">
+            Ваша доминирующая доша: {dominantDosha}
+          </p>
+          <div className="space-y-2">
+            <p>Распределение баллов:</p>
+            <ul className="list-disc pl-5">
+              <li>Вата: {scores.vata}</li>
+              <li>Питта: {scores.pitta}</li>
+              <li>Капха: {scores.kapha}</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <Disclaimer />
+      <Card>
+        <CardHeader>
+          <CardTitle>{section.title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-lg">{question.text}</p>
+            <RadioGroup
+              onValueChange={(value) =>
+                handleAnswer(question.answers[parseInt(value)])
+              }
+            >
+              {question.answers.map((answer, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <RadioGroupItem value={index.toString()} id={`answer-${index}`} />
+                  <Label htmlFor={`answer-${index}`}>{answer.text}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
