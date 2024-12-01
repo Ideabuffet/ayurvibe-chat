@@ -7,6 +7,7 @@ import { ChatContainer } from "@/components/chat/ChatContainer";
 import { NavigationButtons } from "@/components/chat/NavigationButtons";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { HerbalSection } from "@/components/herbs/HerbalSection";
 
 const getCategoryTitle = (category: string): string => {
   switch (category) {
@@ -50,6 +51,7 @@ const Index = () => {
   const [hasResults, setHasResults] = useState(false);
   const categoryTitle = getCategoryTitle(category || '');
   const isDoshaRelated = doshaParam !== null;
+  const isHerbsCategory = category === 'herbs';
 
   useEffect(() => {
     const checkDoshaResults = async () => {
@@ -105,8 +107,12 @@ const Index = () => {
       <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
         {categoryTitle}
       </h1>
-      
-      {category && <ChatContainer category={category} dosha={dosha} />}
+
+      {isHerbsCategory ? (
+        <HerbalSection />
+      ) : (
+        category && <ChatContainer category={category} dosha={dosha} />
+      )}
     </div>
   );
 };
