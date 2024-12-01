@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ChatMessage } from "@/components/ChatMessage";
 import { getDoshaRecommendations } from "@/utils/doshaRecommendations";
+import { DoshaType } from "@/types/dosha";
 import { 
   Apple, 
   HeartPulse, 
@@ -19,7 +20,8 @@ const Index = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const dosha = searchParams.get('dosha');
+  const doshaParam = searchParams.get('dosha');
+  const dosha = (doshaParam as DoshaType) || 'vata';
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -33,7 +35,7 @@ const Index = () => {
 
   useEffect(() => {
     if (dosha && category && category !== 'dosha') {
-      const initialRecommendation = getDoshaRecommendations(dosha, category);
+      const initialRecommendation = getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine');
       setMessages([{
         content: initialRecommendation,
         isAi: true,
