@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { getOpenAIResponse } from "@/utils/openai";
 import { useToast } from "@/components/ui/use-toast";
 import { DoshaType } from "@/types/dosha";
+import { translateAyurvedaTerms } from "@/utils/translations";
 
 interface ChatContainerProps {
   category: string;
@@ -52,6 +53,8 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
               category
             );
           }
+          // Translate English terms to Russian before displaying
+          initialMessage = translateAyurvedaTerms(initialMessage);
           setMessages([{
             content: initialMessage,
             isAi: true,
@@ -77,7 +80,9 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const simulateTyping = async (response: string) => {
     setIsTyping(true);
     
-    const words = response.split(' ');
+    // Translate the response before simulating typing
+    const translatedResponse = translateAyurvedaTerms(response);
+    const words = translatedResponse.split(' ');
     let currentResponse = '';
     let wordIndex = 0;
     
