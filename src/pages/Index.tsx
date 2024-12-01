@@ -30,6 +30,7 @@ const Index = () => {
   const doshaParam = searchParams.get('dosha');
   const dosha = (doshaParam as DoshaType) || 'vata';
   const [hasResults, setHasResults] = useState(false);
+  const categoryTitle = getCategoryTitle(category || '');
 
   useEffect(() => {
     const checkDoshaResults = async () => {
@@ -77,7 +78,7 @@ const Index = () => {
       
       {categoryTitle && (
         <h1 className="text-3xl font-serif font-medium text-ayurveda-primary mb-6 text-center">
-          {getCategoryTitle(category || '')}
+          {categoryTitle}
         </h1>
       )}
       
