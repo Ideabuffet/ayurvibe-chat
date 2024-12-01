@@ -11,6 +11,17 @@ interface ChatContainerProps {
   dosha: DoshaType;
 }
 
+const getRandomHerbalIntro = () => {
+  const intros = [
+    "Травы в Аюрведе — это не просто растения, а мощные природные инструменты для поддержания здоровья. Каждая трава обладает уникальными свойствами и может использоваться как самостоятельно, так и в сочетании с другими. Какие травы или их применение вас интересуют?",
+    "В аюрведической медицине травы играют ключевую роль в поддержании баланса и здоровья. Они используются в виде чаев, порошков, масел и других форм. О каких травах или способах их применения вы хотели бы узнать подробнее?",
+    "Аюрведическая фитотерапия — это древнее искусство использования трав для исцеления и поддержания здоровья. Каждое растение имеет свой особый профиль действия и может помочь в различных ситуациях. Что именно вас интересует в области аюрведических трав?",
+    "В арсенале Аюрведы существуют сотни лекарственных растений, каждое из которых обладает уникальными целебными свойствами. Эти травы могут использоваться для профилактики и лечения различных состояний. О чем бы вы хотели узнать подробнее?",
+    "Травяные средства в Аюрведе — это целая наука о том, как использовать природные ресурсы для поддержания здоровья и лечения заболеваний. Каждая трава имеет свой вкус, энергетику и особые свойства. Какие аспекты применения трав вас интересуют?"
+  ];
+  return intros[Math.floor(Math.random() * intros.length)];
+};
+
 export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -28,14 +39,19 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
 
   useEffect(() => {
     const initializeChat = async () => {
-      if (dosha && category && category !== 'dosha') {
+      if (category) {
         setIsInitializing(true);
         try {
-          const initialMessage = await getOpenAIResponse(
-            "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
-            dosha,
-            category
-          );
+          let initialMessage;
+          if (category === 'herbs') {
+            initialMessage = getRandomHerbalIntro();
+          } else {
+            initialMessage = await getOpenAIResponse(
+              "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
+              dosha,
+              category
+            );
+          }
           setMessages([{
             content: initialMessage,
             isAi: true,
