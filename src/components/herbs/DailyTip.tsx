@@ -12,12 +12,11 @@ export const DailyTip = () => {
     
     setIsRefreshing(true);
     try {
-      const response = await getOpenAIResponse(
+      await getOpenAIResponse(
         "Дай полезный совет дня по использованию трав в Аюрведе. Например, как использовать куркуму для снятия воспаления. Ответ должен быть конкретным, практичным и оригинальным. Не повторяй предыдущие советы.",
         "vata",
         "herbs"
       );
-      return response;
     } catch (error: any) {
       toast({
         title: "Ошибка",
