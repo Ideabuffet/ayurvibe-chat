@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { doshaQuestions, type Answer } from "@/data/doshaQuestions";
 import { Disclaimer } from "./Disclaimer";
+import { useNavigate } from "react-router-dom";
 import { 
   Apple, 
   HeartPulse, 
@@ -19,6 +20,7 @@ type DoshaScores = {
 };
 
 export const DoshaQuiz = () => {
+  const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
@@ -85,14 +87,25 @@ export const DoshaQuiz = () => {
 
   const getDominantDosha = (scores: DoshaScores) => {
     const max = Math.max(scores.vata, scores.pitta, scores.kapha);
-    if (scores.vata === max) return "Вата";
-    if (scores.pitta === max) return "Питта";
-    return "Капха";
+    if (scores.vata === max) return "vata";
+    if (scores.pitta === max) return "pitta";
+    return "kapha";
+  };
+
+  const handleChatNavigation = (category: string) => {
+    const scores = calculateResults();
+    const dominantDosha = getDominantDosha(scores);
+    navigate(`/chat/${category}?dosha=${dominantDosha}`);
   };
 
   if (showResults) {
     const scores = calculateResults();
     const dominantDosha = getDominantDosha(scores);
+    const doshaNames = {
+      vata: "Вата",
+      pitta: "Питта",
+      kapha: "Капха"
+    };
 
     return (
       <div className="space-y-4">
@@ -102,7 +115,7 @@ export const DoshaQuiz = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-lg font-medium">
-              Ваша доминирующая доша: {dominantDosha}
+              Ваша доминирующая доша: {doshaNames[dominantDosha]}
             </p>
             <div className="space-y-2">
               <p>Распределение баллов:</p>
@@ -116,19 +129,35 @@ export const DoshaQuiz = () => {
             <div className="pt-6">
               <p className="font-medium mb-4">Что дальше?</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button className="w-full" variant="outline">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => handleChatNavigation('nutrition')}
+                >
                   <Apple className="mr-2" />
                   Рекомендации по питанию
                 </Button>
-                <Button className="w-full" variant="outline">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => handleChatNavigation('health')}
+                >
                   <HeartPulse className="mr-2" />
                   Здоровье и лечение
                 </Button>
-                <Button className="w-full" variant="outline">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => handleChatNavigation('meditation')}
+                >
                   <Brain className="mr-2" />
                   Практики и медитации
                 </Button>
-                <Button className="w-full" variant="outline">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => handleChatNavigation('routine')}
+                >
                   <Calendar className="mr-2" />
                   Ежедневные рутины
                 </Button>
