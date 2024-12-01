@@ -6,17 +6,11 @@ import { Label } from "@/components/ui/label";
 import { doshaQuestions, type Answer } from "@/data/doshaQuestions";
 import { Disclaimer } from "./Disclaimer";
 import { useNavigate } from "react-router-dom";
-import { 
-  Apple, 
-  HeartPulse, 
-  Brain,
-  Calendar,
-  ArrowRight,
-  ArrowLeft,
-  CircleDot
-} from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { DoshaScores, DoshaType } from "@/types/dosha";
+import { DoshaResultHeader } from "./dosha/DoshaResultHeader";
+import { DoshaRecommendations } from "./dosha/DoshaRecommendations";
 
 export const DoshaQuiz = () => {
   const navigate = useNavigate();
@@ -96,89 +90,19 @@ export const DoshaQuiz = () => {
     return "kapha";
   };
 
-  const handleChatNavigation = (category: string) => {
-    const scores = calculateResults();
-    const dominantDosha = getDominantDosha(scores);
-    navigate(`/chat/${category}?dosha=${dominantDosha}`);
-  };
-
   if (showResults) {
     const scores = calculateResults();
     const dominantDosha = getDominantDosha(scores);
-    const doshaNames: Record<DoshaType, string> = {
-      vata: "Вата",
-      pitta: "Питта",
-      kapha: "Капха"
-    };
 
     return (
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         <Card className="p-8 bg-white/80 backdrop-blur border-ayurveda-accent/20">
-          <div className="space-y-6">
-            <div className="text-center space-y-4">
-              <CircleDot className="w-16 h-16 mx-auto text-ayurveda-primary" />
-              <h2 className="text-3xl font-serif font-medium text-ayurveda-primary">
-                Ваш результат
-              </h2>
-              <p className="text-xl font-medium text-ayurveda-text">
-                Ваша доминирующая доша: {doshaNames[dominantDosha]}
-              </p>
-            </div>
-
-            <div className="space-y-4 mt-8">
-              <p className="text-lg font-medium">Распределение баллов:</p>
-              <div className="space-y-4">
-                {(Object.entries(scores) as [DoshaType, number][]).map(([dosha, score]) => (
-                  <div key={dosha} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{doshaNames[dosha]}</span>
-                      <span>{score}</span>
-                    </div>
-                    <Progress 
-                      value={(score / Object.values(scores).reduce((a, b) => a + b, 0)) * 100} 
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="pt-8">
-              <p className="text-xl font-medium text-center mb-6">Что дальше?</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Button 
-                  className="w-full bg-white hover:bg-ayurveda-accent/5" 
-                  variant="outline"
-                  onClick={() => handleChatNavigation('nutrition')}
-                >
-                  <Apple className="mr-2 h-5 w-5 text-ayurveda-primary" />
-                  Рекомендации по питанию
-                </Button>
-                <Button 
-                  className="w-full bg-white hover:bg-ayurveda-accent/5" 
-                  variant="outline"
-                  onClick={() => handleChatNavigation('health')}
-                >
-                  <HeartPulse className="mr-2 h-5 w-5 text-ayurveda-primary" />
-                  Здоровье и лечение
-                </Button>
-                <Button 
-                  className="w-full bg-white hover:bg-ayurveda-accent/5" 
-                  variant="outline"
-                  onClick={() => handleChatNavigation('meditation')}
-                >
-                  <Brain className="mr-2 h-5 w-5 text-ayurveda-primary" />
-                  Практики и медитации
-                </Button>
-                <Button 
-                  className="w-full bg-white hover:bg-ayurveda-accent/5" 
-                  variant="outline"
-                  onClick={() => handleChatNavigation('routine')}
-                >
-                  <Calendar className="mr-2 h-5 w-5 text-ayurveda-primary" />
-                  Ежедневные рутины
-                </Button>
-              </div>
-            </div>
+          <div className="space-y-8">
+            <DoshaResultHeader 
+              dominantDosha={dominantDosha} 
+              scores={scores} 
+            />
+            <DoshaRecommendations dominantDosha={dominantDosha} />
           </div>
         </Card>
       </div>
