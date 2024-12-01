@@ -52,6 +52,7 @@ export const HerbalSection = () => {
             label={service.label}
             onClick={() => navigate(service.path)}
             color={service.color}
+            isActive={subcategory === service.id}
           />
         ))}
       </div>
