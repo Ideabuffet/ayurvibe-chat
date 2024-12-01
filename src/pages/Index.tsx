@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useState, useEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
+import { ApiKeyInput } from "@/components/ApiKeyInput";
 import { DoshaType } from "@/types/dosha";
 import { 
   Apple, 
@@ -13,20 +14,14 @@ import {
   Calendar,
   ArrowLeft
 } from "lucide-react";
-import { findRelevantInfo } from "@/utils/ayurvedaKnowledge";
-
-const generateAIResponse = (message: string, dosha: DoshaType, category: string) => {
-  return findRelevantInfo(message, dosha, category);
-};
-
-const getInitialMessage = (dosha: DoshaType, category: string) => {
-  return findRelevantInfo("initial", dosha, category);
-};
+import { getOpenAIResponse } from "@/utils/openai";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const doshaParam = searchParams.get('dosha');
   const dosha = (doshaParam as DoshaType) || 'vata';
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
@@ -50,17 +45,33 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (dosha && category && category !== 'dosha') {
-      const initialMessage = getInitialMessage(dosha, category);
-      setMessages([{
-        content: initialMessage,
-        isAi: true,
-        timestamp: new Date()
-      }]);
-    }
-  }, [dosha, category]);
+    const initializeChat = async () => {
+      if (dosha && category && category !== 'dosha') {
+        try {
+          const initialMessage = await getOpenAIResponse(
+            "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
+            dosha,
+            category
+          );
+          setMessages([{
+            content: initialMessage,
+            isAi: true,
+            timestamp: new Date()
+          }]);
+        } catch (error) {
+          toast({
+            title: "Ошибка",
+            description: "Не удалось загрузить начальные рекомендации. Проверьте ваш API ключ.",
+            variant: "destructive",
+          });
+        }
+      }
+    };
 
-  const simulateTyping = (response: string) => {
+    initializeChat();
+  }, [dosha, category, toast]);
+
+  const simulateTyping = async (response: string) => {
     setIsTyping(true);
     
     const words = response.split(' ');
@@ -91,22 +102,38 @@ const Index = () => {
     }, 100);
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
+    if (!localStorage.getItem("openai_api_key")) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, сначала введите ваш API ключ OpenAI",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setMessages(prev => [...prev, {
       content: message,
       isAi: false,
       timestamp: new Date()
     }]);
     
-    const response = generateAIResponse(message, dosha, category || 'routine');
-    simulateTyping(response);
+    try {
+      const response = await getOpenAIResponse(message, dosha, category || 'routine');
+      simulateTyping(response);
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось получить ответ. Проверьте ваш API ключ.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (category === "dosha") {
     return <DoshaQuiz />;
   }
 
-  // ... keep existing code (JSX for the chat interface)
   return (
     <div className="container max-w-4xl mx-auto p-4 space-y-4">
       <div className="flex items-center justify-between mb-6">
@@ -119,6 +146,8 @@ const Index = () => {
           Вернуться к результатам
         </Button>
       </div>
+
+      <ApiKeyInput />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <Button 

@@ -13,6 +13,15 @@ export const ApiKeyInput = () => {
   }, []);
 
   const handleSave = () => {
+    if (!apiKey.startsWith('sk-')) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, введите правильный ключ OpenAI API",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     localStorage.setItem("openai_api_key", apiKey);
     toast({
       title: "API ключ сохранен",
