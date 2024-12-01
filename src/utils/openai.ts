@@ -1,4 +1,7 @@
 import OpenAI from "openai";
+import { toast } from "sonner";
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const getOpenAIResponse = async (
   message: string,
@@ -21,19 +24,33 @@ export const getOpenAIResponse = async (
 Давай подробные, но лаконичные ответы, основанные на принципах Аюрведы.
 Используй простой и понятный язык. Отвечай на русском языке.`;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message }
-      ],
-      model: "gpt-4",
-      temperature: 0.7,
-    });
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
+        ],
+        model: "gpt-4",
+        temperature: 0.7,
+      });
 
-    return completion.choices[0]?.message?.content || "Извините, не удалось получить ответ";
-  } catch (error) {
-    console.error("OpenAI API error:", error);
-    throw new Error("Не удалось получить ответ от OpenAI");
+      return completion.choices[0]?.message?.content || "Извините, не удалось получить ответ";
+    } catch (error: any) {
+      if (error?.status === 429) {
+        retries--;
+        if (retries > 0) {
+          toast.warning("Превышен лимит запросов. Пожалуйста, подождите...");
+          // Wait for 20 seconds before retrying
+          await delay(20000);
+          continue;
+        }
+      }
+      console.error("OpenAI API error:", error);
+      throw new Error(error?.error?.message || "Не удалось получить ответ от OpenAI");
+    }
   }
+
+  throw new Error("Превышен лимит запросов к API. Пожалуйста, попробуйте позже.");
 };
