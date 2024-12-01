@@ -1,4 +1,4 @@
-import { Apple, Calendar, Brain, HeartPulse, Leaf, Utensils, Moon, Palette, Coffee, Sprout, Flask, Droplets, Timer } from "lucide-react";
+import { Apple, Calendar, Brain, HeartPulse, Leaf, Utensils, Moon, Palette, Coffee, Sprout, FlaskConical, Droplets, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DoshaType } from "@/types/dosha";
