@@ -14,16 +14,16 @@ import {
 import { ServiceButton } from "@/components/ServiceButton";
 
 const services = [
-  { id: "dosha", icon: CircleDot, label: "Определите свою Дошу" },
-  { id: "herbs", icon: Leaf, label: "Травяные Средства" },
-  { id: "diet", icon: UtensilsCrossed, label: "Диетические Рекомендации" },
-  { id: "lifestyle", icon: PersonStanding, label: "Образ Жизни" },
-  { id: "chronic", icon: HeartPulse, label: "Хронические Заболевания" },
-  { id: "detox", icon: Droplet, label: "Детокс и Очищение" },
-  { id: "stress", icon: Flower2, label: "Стресс и Эмоции" },
-  { id: "beauty", icon: User, label: "Красота и Уход за Кожей" },
-  { id: "energy", icon: Sun, label: "Энергия и Духовность" },
-  { id: "sleep", icon: Moon, label: "Улучшение Сна" },
+  { id: "dosha", icon: CircleDot, label: "Определите\nсвою Дошу" },
+  { id: "herbs", icon: Leaf, label: "Травяные\nСредства" },
+  { id: "diet", icon: UtensilsCrossed, label: "Диетические\nРекомендации" },
+  { id: "lifestyle", icon: PersonStanding, label: "Образ\nЖизни" },
+  { id: "chronic", icon: HeartPulse, label: "Хронические\nЗаболевания" },
+  { id: "detox", icon: Droplet, label: "Детокс и\nОчищение" },
+  { id: "stress", icon: Flower2, label: "Стресс и\nЭмоции" },
+  { id: "beauty", icon: User, label: "Красота и\nУход за Кожей" },
+  { id: "energy", icon: Sun, label: "Энергия и\nДуховность" },
+  { id: "sleep", icon: Moon, label: "Улучшение\nСна" },
 ];
 
 const Services = () => {
