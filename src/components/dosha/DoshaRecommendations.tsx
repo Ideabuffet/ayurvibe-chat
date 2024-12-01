@@ -91,7 +91,7 @@ export const DoshaRecommendations = ({ dominantDosha }: DoshaRecommendationsProp
     <div className="space-y-8 p-6 bg-white/80 backdrop-blur rounded-lg">
       <div className="text-center border-b pb-4">
         <h2 className="text-3xl font-bold tracking-wide text-ayurveda-primary">
-          {dominantDosha.toUpperCase()} ДОША
+          {dominantDosha === 'kapha' ? 'КАПХА' : dominantDosha.toUpperCase()} ДОША
         </h2>
       </div>
 
