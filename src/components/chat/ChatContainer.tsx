@@ -136,6 +136,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
                 content={message.content}
                 isAi={message.isAi}
                 timestamp={message.timestamp}
+                isFirstMessage={index === 0}
               />
             ))
           )}
