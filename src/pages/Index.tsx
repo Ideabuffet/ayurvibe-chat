@@ -2,6 +2,9 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { Disclaimer } from "@/components/Disclaimer";
+import { ApiKeyInput } from "@/components/ApiKeyInput";
+import OpenAI from "openai";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   content: string;
@@ -15,11 +18,15 @@ const INITIAL_MESSAGE: Message = {
   timestamp: new Date(),
 };
 
+const SYSTEM_PROMPT = `Ты - опытный Аюрведический врач. Отвечай на вопросы пользователей о здоровье, основываясь на принципах Аюрведы. 
+Всегда отвечай на русском языке. Будь профессиональным, но дружелюбным. При необходимости напоминай, что твои советы носят информационный характер 
+и не заменяют консультацию с врачом.`;
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const { toast } = useToast();
 
-  const handleSendMessage = (content: string) => {
-    // Add user message
+  const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
       content,
       isAi: false,
@@ -28,15 +35,45 @@ const Index = () => {
     
     setMessages((prev) => [...prev, userMessage]);
 
-    // Simulate AI response in Russian
-    setTimeout(() => {
+    const apiKey = localStorage.getItem("openai_api_key");
+    if (!apiKey) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, введите ваш ключ OpenAI API в настройках выше",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+      
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages.map(msg => ({
+            role: msg.isAi ? "assistant" : "user",
+            content: msg.content
+          })),
+          { role: "user", content }
+        ],
+        model: "gpt-4",
+      });
+
       const aiMessage: Message = {
-        content: "Я понимаю ваш интерес к Аюрведической мудрости. Позвольте поделиться некоторыми знаниями, основанными на традиционных принципах. Хотели бы вы узнать больше о вашей доше (конституции тела) или у вас есть конкретные вопросы о здоровье?",
+        content: completion.choices[0]?.message?.content || "Извините, произошла ошибка. Попробуйте еще раз.",
         isAi: true,
         timestamp: new Date(),
       };
+      
       setMessages((prev) => [...prev, aiMessage]);
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось получить ответ от OpenAI. Проверьте ваш ключ API и попробуйте снова.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -46,6 +83,7 @@ const Index = () => {
       </header>
 
       <div className="flex-1 container max-w-4xl mx-auto p-4 overflow-y-auto">
+        <ApiKeyInput />
         <Disclaimer />
         <div className="space-y-4">
           {messages.map((message, index) => (
