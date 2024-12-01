@@ -13,91 +13,14 @@ import {
   Calendar,
   ArrowLeft
 } from "lucide-react";
-import { getDoshaRecommendations } from "@/utils/doshaRecommendations";
+import { findRelevantInfo } from "@/utils/ayurvedaKnowledge";
 
 const generateAIResponse = (message: string, dosha: DoshaType, category: string) => {
-  // База знаний об Аюрведе для каждой доши
-  const ayurvedaKnowledge = {
-    vata: {
-      "продукты": `Для Ваты рекомендуются:
-        • Теплые, приготовленные продукты
-        • Сладкие фрукты
-        • Вареные овощи
-        • Цельные злаки
-        • Молочные продукты
-        • Полезные масла
-        
-        Избегайте:
-        • Сырых овощей
-        • Сухофруктов
-        • Холодных напитков
-        • Газированных напитков`,
-      "питание": "Для Ваты важно питаться регулярно, 3 раза в день. Пропуск приемов пищи может усилить дисбаланс. Основной прием пищи должен быть в обед.",
-    },
-    pitta: {
-      "продукты": `Для Питты рекомендуются:
-        • Охлаждающие продукты
-        • Сладкие фрукты
-        • Зеленые овощи
-        • Злаки
-        • Молочные продукты
-        
-        Избегайте:
-        • Острой пищи
-        • Кислых фруктов
-        • Соленых продуктов
-        • Ферментированной пищи`,
-      "питание": "Питте важно есть в спокойной обстановке, избегая перегрева. Не пропускайте приемы пищи и не переедайте.",
-    },
-    kapha: {
-      "продукты": `Для Капхи рекомендуются:
-        • Легкие, сухие продукты
-        • Острые специи
-        • Горький вкус
-        • Зеленые овощи
-        • Бобовые
-        • Гречка, киноа, просо
-        
-        Избегайте:
-        • Тяжелой, жирной пищи
-        • Молочных продуктов
-        • Сладостей
-        • Холодных напитков
-        • Жареной пищи`,
-      "питание": "Капхе рекомендуется легкий завтрак, основной прием пищи в обед и легкий ранний ужин. Важно не переедать.",
-    }
-  };
-
-  const findBestResponse = (question: string, doshaType: DoshaType) => {
-    const doshaInfo = ayurvedaKnowledge[doshaType];
-    const questionLower = question.toLowerCase();
-    
-    // Проверяем ключевые слова в вопросе
-    if (questionLower.includes('продукт') || questionLower.includes('еда') || questionLower.includes('питан')) {
-      return doshaInfo.продукты;
-    }
-    
-    // Поиск по другим ключевым словам
-    for (const [key, value] of Object.entries(doshaInfo)) {
-      if (questionLower.includes(key.toLowerCase())) {
-        return value;
-      }
-    }
-    
-    return `Для вашей ${doshaType} доши важно правильное питание. Я могу рассказать о:
-    - Рекомендуемых продуктах
-    - Режиме питания
-    - Специях и приправах
-    
-    Что именно вас интересует?`;
-  };
-
-  return findBestResponse(message, dosha);
+  return findRelevantInfo(message, dosha, category);
 };
 
 const getInitialMessage = (dosha: DoshaType, category: string) => {
-  const initialRecommendation = getDoshaRecommendations(dosha, category as 'nutrition' | 'health' | 'meditation' | 'routine');
-  return `${initialRecommendation}\n\nЧто именно вас интересует?`;
+  return findRelevantInfo("initial", dosha, category);
 };
 
 const Index = () => {
