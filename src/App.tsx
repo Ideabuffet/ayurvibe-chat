@@ -9,6 +9,11 @@ import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Login from "./pages/Login";
 import Header from "./components/Header";
+import Consultation from "./pages/Consultation";
+import Medicine from "./pages/Medicine";
+import Education from "./pages/Education";
+import Detox from "./pages/Detox";
+import Panchakarma from "./pages/Panchakarma";
 import React from 'react';
 
 const queryClient = new QueryClient();
@@ -55,6 +60,46 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Services />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/consultation"
+                  element={
+                    <ProtectedRoute>
+                      <Consultation />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/medicine"
+                  element={
+                    <ProtectedRoute>
+                      <Medicine />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/education"
+                  element={
+                    <ProtectedRoute>
+                      <Education />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/detox"
+                  element={
+                    <ProtectedRoute>
+                      <Detox />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/panchakarma"
+                  element={
+                    <ProtectedRoute>
+                      <Panchakarma />
                     </ProtectedRoute>
                   }
                 />

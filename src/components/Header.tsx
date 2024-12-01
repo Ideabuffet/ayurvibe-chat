@@ -50,18 +50,28 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-ayurveda-background border-ayurveda-accent/20">
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
-                <Link to="/chat/nutrition" className="w-full">
-                  Питание
+                <Link to="/consultation" className="w-full">
+                  Консультация у доктора
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
-                <Link to="/chat/lifestyle" className="w-full">
-                  Образ жизни
+                <Link to="/medicine" className="w-full">
+                  Подбор лекарств
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
-                <Link to="/chat/herbs" className="w-full">
-                  Травы
+                <Link to="/education" className="w-full">
+                  Обучение Аюрведе
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
+                <Link to="/detox" className="w-full">
+                  Детокс программа
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
+                <Link to="/panchakarma" className="w-full">
+                  Панчакарма в Индии
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
