@@ -48,25 +48,39 @@ const Index = () => {
     try {
       const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
       
-      const completion = await openai.chat.completions.create({
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages.map(msg => ({
-            role: msg.isAi ? "assistant" : "user",
-            content: msg.content
-          })),
-          { role: "user", content }
-        ],
-        model: "gpt-4",
-      });
-
+      // Create a new AI message with empty content
       const aiMessage: Message = {
-        content: completion.choices[0]?.message?.content || "Извините, произошла ошибка. Попробуйте еще раз.",
+        content: "",
         isAi: true,
         timestamp: new Date(),
       };
-      
       setMessages((prev) => [...prev, aiMessage]);
+
+      const stream = await openai.chat.completions.create({
+        messages: [
+          { role: "system" as const, content: SYSTEM_PROMPT },
+          ...messages.map(msg => ({
+            role: msg.isAi ? "assistant" as const : "user" as const,
+            content: msg.content
+          })),
+          { role: "user" as const, content }
+        ],
+        model: "gpt-4",
+        stream: true,
+      });
+
+      let fullContent = "";
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        fullContent += content;
+        
+        // Update the last message with the accumulated content
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = fullContent;
+          return newMessages;
+        });
+      }
     } catch (error) {
       toast({
         title: "Ошибка",
