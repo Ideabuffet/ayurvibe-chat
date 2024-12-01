@@ -3,6 +3,9 @@ import { toast } from "sonner";
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 20000; // 20 seconds
+
 export const getOpenAIResponse = async (
   message: string,
   dosha: string,
@@ -11,6 +14,7 @@ export const getOpenAIResponse = async (
   const apiKey = localStorage.getItem("openai_api_key");
   
   if (!apiKey) {
+    toast.error("API ключ не найден");
     throw new Error("API ключ не найден");
   }
 
@@ -24,7 +28,9 @@ export const getOpenAIResponse = async (
 Давай подробные, но лаконичные ответы, основанные на принципах Аюрведы.
 Используй простой и понятный язык. Отвечай на русском языке.`;
 
-  let retries = 3;
+  let retries = MAX_RETRIES;
+  let lastError: any = null;
+
   while (retries > 0) {
     try {
       const completion = await openai.chat.completions.create({
@@ -36,21 +42,39 @@ export const getOpenAIResponse = async (
         temperature: 0.7,
       });
 
-      return completion.choices[0]?.message?.content || "Извините, не удалось получить ответ";
+      const response = completion.choices[0]?.message?.content;
+      if (!response) {
+        throw new Error("Пустой ответ от API");
+      }
+
+      return response;
+
     } catch (error: any) {
+      lastError = error;
+      
       if (error?.status === 429) {
         retries--;
         if (retries > 0) {
-          toast.warning("Превышен лимит запросов. Пожалуйста, подождите...");
-          // Wait for 20 seconds before retrying
-          await delay(20000);
+          toast.warning(`Превышен лимит запросов. Повторная попытка через ${RETRY_DELAY/1000} секунд...`);
+          await delay(RETRY_DELAY);
           continue;
         }
+      } else if (error.message?.includes('Failed to fetch') || error.code === 'ECONNRESET') {
+        retries--;
+        if (retries > 0) {
+          toast.warning("Ошибка сети. Повторная попытка...");
+          await delay(2000); // Short delay for network errors
+          continue;
+        }
+      } else {
+        // For other errors, don't retry
+        break;
       }
-      console.error("OpenAI API error:", error);
-      throw new Error(error?.error?.message || "Не удалось получить ответ от OpenAI");
     }
   }
 
-  throw new Error("Превышен лимит запросов к API. Пожалуйста, попробуйте позже.");
+  // Handle final error
+  const errorMessage = lastError?.error?.message || lastError?.message || "Неизвестная ошибка";
+  toast.error(errorMessage);
+  throw new Error(errorMessage);
 };

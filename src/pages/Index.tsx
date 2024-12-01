@@ -26,6 +26,7 @@ const Index = () => {
   const dosha = (doshaParam as DoshaType) || 'vata';
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -46,7 +47,13 @@ const Index = () => {
 
   useEffect(() => {
     const initializeChat = async () => {
+      if (!localStorage.getItem("openai_api_key")) {
+        setIsInitializing(false);
+        return;
+      }
+
       if (dosha && category && category !== 'dosha') {
+        setIsInitializing(true);
         try {
           const initialMessage = await getOpenAIResponse(
             "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
@@ -58,13 +65,17 @@ const Index = () => {
             isAi: true,
             timestamp: new Date()
           }]);
-        } catch (error) {
+        } catch (error: any) {
           toast({
             title: "Ошибка",
-            description: "Не удалось загрузить начальные рекомендации. Проверьте ваш API ключ.",
+            description: error.message || "Не удалось загрузить начальные рекомендации",
             variant: "destructive",
           });
+        } finally {
+          setIsInitializing(false);
         }
+      } else {
+        setIsInitializing(false);
       }
     };
 
@@ -112,6 +123,15 @@ const Index = () => {
       return;
     }
 
+    if (isTyping) {
+      toast({
+        title: "Подождите",
+        description: "Бот все еще печатает ответ",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setMessages(prev => [...prev, {
       content: message,
       isAi: false,
@@ -121,10 +141,10 @@ const Index = () => {
     try {
       const response = await getOpenAIResponse(message, dosha, category || 'routine');
       simulateTyping(response);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Ошибка",
-        description: "Не удалось получить ответ. Проверьте ваш API ключ.",
+        description: error.message || "Не удалось получить ответ",
         variant: "destructive",
       });
     }
@@ -187,17 +207,27 @@ const Index = () => {
       <Card className="p-4">
         <div className="space-y-4">
           <div className="space-y-4 max-h-[500px] overflow-y-auto">
-            {messages.map((message, index) => (
-              <ChatMessage
-                key={index}
-                content={message.content}
-                isAi={message.isAi}
-                timestamp={message.timestamp}
-              />
-            ))}
+            {isInitializing ? (
+              <div className="text-center text-gray-500">
+                Загрузка...
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="text-center text-gray-500">
+                Начните диалог, задав свой вопрос
+              </div>
+            ) : (
+              messages.map((message, index) => (
+                <ChatMessage
+                  key={index}
+                  content={message.content}
+                  isAi={message.isAi}
+                  timestamp={message.timestamp}
+                />
+              ))
+            )}
             <div ref={messagesEndRef} />
           </div>
-          <ChatInput onSendMessage={handleSendMessage} />
+          <ChatInput onSendMessage={handleSendMessage} disabled={isTyping || isInitializing} />
         </div>
       </Card>
     </div>
