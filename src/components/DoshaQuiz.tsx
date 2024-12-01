@@ -23,11 +23,15 @@ export const DoshaQuiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [showResults, setShowResults] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   const section = doshaQuestions[currentSection];
   const question = section?.questions[currentQuestion];
 
-  const handleAnswer = (answer: Answer) => {
+  const handleNext = () => {
+    if (!selectedAnswer) return;
+
+    const answer = question.answers[parseInt(selectedAnswer)];
     setAnswers((prev) => ({
       ...prev,
       [question.id]: answer,
@@ -41,6 +45,7 @@ export const DoshaQuiz = () => {
     } else {
       setShowResults(true);
     }
+    setSelectedAnswer(null);
   };
 
   const calculateResults = (): DoshaScores => {
@@ -123,9 +128,8 @@ export const DoshaQuiz = () => {
           <div className="space-y-4">
             <p className="text-lg">{question.text}</p>
             <RadioGroup
-              onValueChange={(value) =>
-                handleAnswer(question.answers[parseInt(value)])
-              }
+              value={selectedAnswer || ""}
+              onValueChange={setSelectedAnswer}
             >
               {question.answers.map((answer, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -134,6 +138,15 @@ export const DoshaQuiz = () => {
                 </div>
               ))}
             </RadioGroup>
+            <div className="pt-4">
+              <Button 
+                onClick={handleNext}
+                disabled={!selectedAnswer}
+                className="w-full"
+              >
+                Далее
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
