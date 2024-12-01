@@ -1,8 +1,21 @@
+// Define the types for the Web Speech API
+interface Window {
+  SpeechRecognition?: typeof SpeechRecognition;
+  webkitSpeechRecognition?: typeof SpeechRecognition;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: typeof SpeechRecognition;
+    webkitSpeechRecognition?: typeof SpeechRecognition;
+  }
+}
+
 export const startSpeechRecognition = (
   onResult: (text: string) => void,
   onEnd: () => void
 ) => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
   if (!SpeechRecognition) {
     console.error("Speech recognition not supported");
     return null;
