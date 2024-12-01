@@ -5,6 +5,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
 
 interface DoshaResultHeaderProps {
   dominantDosha: DoshaType;
@@ -27,51 +28,65 @@ const doshaNames: Record<DoshaType, string> = {
   kapha: "Капха"
 };
 
+const doshaColors: Record<DoshaType, string> = {
+  vata: "from-purple-500 to-blue-500",
+  pitta: "from-red-500 to-orange-500",
+  kapha: "from-green-500 to-emerald-500"
+};
+
 export const DoshaResultHeader = ({ dominantDosha, scores }: DoshaResultHeaderProps) => {
   const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
   
   return (
-    <div className="space-y-6 text-center">
-      <div className="relative inline-block">
-        <CircleDot className="w-20 h-20 text-ayurveda-primary animate-pulse" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-serif font-medium">
-            {doshaNames[dominantDosha]}
-          </span>
+    <div className="space-y-8">
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <div className={cn(
+          "relative w-32 h-32 rounded-full bg-gradient-to-br p-1",
+          doshaColors[dominantDosha]
+        )}>
+          <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
+            <span className="text-3xl font-serif font-medium bg-gradient-to-br bg-clip-text text-transparent animate-pulse"
+              style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}>
+              {doshaNames[dominantDosha]}
+            </span>
+          </div>
+        </div>
+
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl font-serif font-medium text-ayurveda-primary">
+            Ваша доминирующая доша
+          </h2>
+          <div className="flex items-center justify-center gap-2">
+            <p className="text-xl text-ayurveda-text">
+              {doshaNames[dominantDosha]}
+            </p>
+            <HoverCard>
+              <HoverCardTrigger>
+                <Info className="h-5 w-5 text-ayurveda-accent cursor-help" />
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 p-4 bg-white/95 backdrop-blur border-ayurveda-accent/20">
+                <p className="text-sm leading-relaxed">{doshaDescriptions[dominantDosha]}</p>
+              </HoverCardContent>
+            </HoverCard>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <h2 className="text-3xl font-serif font-medium text-ayurveda-primary">
-          Ваша доминирующая доша
-        </h2>
-        <div className="flex items-center justify-center gap-2">
-          <p className="text-xl text-ayurveda-text">
-            {doshaNames[dominantDosha]}
-          </p>
-          <HoverCard>
-            <HoverCardTrigger>
-              <Info className="h-5 w-5 text-ayurveda-accent cursor-help" />
-            </HoverCardTrigger>
-            <HoverCardContent className="w-80">
-              <p className="text-sm">{doshaDescriptions[dominantDosha]}</p>
-            </HoverCardContent>
-          </HoverCard>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Распределение баллов:</h3>
-        <div className="space-y-3">
+      <div className="space-y-4 bg-white/50 backdrop-blur rounded-lg p-6">
+        <h3 className="text-lg font-medium text-center">Распределение баллов:</h3>
+        <div className="space-y-4">
           {(Object.entries(scores) as [DoshaType, number][]).map(([dosha, score]) => (
-            <div key={dosha} className="space-y-1">
+            <div key={dosha} className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>{doshaNames[dosha]}</span>
-                <span>{Math.round((score / totalScore) * 100)}%</span>
+                <span className="font-medium">{doshaNames[dosha]}</span>
+                <span className="text-ayurveda-text/60">{Math.round((score / totalScore) * 100)}%</span>
               </div>
-              <div className="h-2 bg-ayurveda-accent/20 rounded-full overflow-hidden">
+              <div className="h-2 bg-ayurveda-accent/10 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-ayurveda-primary transition-all duration-500 ease-out rounded-full"
+                  className={cn(
+                    "h-full rounded-full transition-all duration-1000 ease-out",
+                    doshaColors[dosha]
+                  )}
                   style={{ width: `${(score / totalScore) * 100}%` }}
                 />
               </div>
