@@ -10,16 +10,16 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-radial from-ayurveda-gold/20 via-transparent to-transparent" />
       <div className="container mx-auto px-4 pt-16 pb-20">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ayurveda-accent/10 text-ayurveda-primary animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-ayurveda-primary animate-fade-in">
             <Sparkles className="w-4 h-4" />
             <span className="text-sm font-medium">Откройте для себя мудрость Аюрведы</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-ayurveda-primary leading-tight animate-message-appear">
-            Ваш путь к <span className="text-ayurveda-gold">гармонии</span> и <span className="text-ayurveda-teal">здоровью</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white leading-tight animate-message-appear drop-shadow-lg">
+            Ваш путь к <span className="text-ayurveda-gold">гармонии</span> и <span className="text-ayurveda-beige">здоровью</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-ayurveda-text/80 max-w-2xl mx-auto animate-message-appear delay-100">
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto animate-message-appear delay-100">
             Персонализированный подход к здоровью, основанный на древней мудрости Аюрведы и современных технологиях
           </p>
 
@@ -27,7 +27,7 @@ export const HeroSection = () => {
             <Button
               size="lg"
               onClick={() => navigate("/chat/dosha")}
-              className="bg-gradient-to-r from-ayurveda-teal to-ayurveda-primary hover:opacity-90 transition-all duration-300 transform hover:scale-105 text-white text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl w-full sm:w-auto"
+              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/20 transition-all duration-300 transform hover:scale-105 text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl w-full sm:w-auto"
             >
               Определить свою дошу
             </Button>
@@ -35,7 +35,7 @@ export const HeroSection = () => {
               variant="outline"
               size="lg"
               onClick={() => navigate("/chat/general")}
-              className="border-2 border-ayurveda-primary text-ayurveda-primary hover:bg-ayurveda-primary/5 transition-all duration-300 transform hover:scale-105 text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl w-full sm:w-auto"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-105 text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl w-full sm:w-auto"
             >
               Задать вопрос эксперту
             </Button>
