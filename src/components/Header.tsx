@@ -34,8 +34,12 @@ const Header = () => {
   return (
     <header className="border-b bg-ayurveda-background">
       <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <Link to="/services" className="text-ayurveda-primary text-xl font-semibold">
-          Ayurveda
+        <Link to="/services" className="flex items-center gap-2">
+          <div className="flex items-center font-serif">
+            <span className="text-2xl font-medium text-ayurveda-primary">Ayur</span>
+            <span className="text-2xl font-medium text-ayurveda-gold">Veda</span>
+            <span className="text-xl text-ayurveda-teal ml-1">Centre</span>
+          </div>
         </Link>
         <nav className="flex items-center gap-6">
           <Link 
