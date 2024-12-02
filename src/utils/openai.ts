@@ -21,14 +21,11 @@ export const getOpenAIResponse = async (
     }
 
     let fullResponse = '';
-    const response = new Response(stream);
-    const reader = response.body?.getReader();
+    const reader = new Response(stream).body?.getReader();
     
     if (!reader) {
       throw new Error("Не удалось инициализировать чтение потока");
     }
-
-    const decoder = new TextDecoder();
 
     try {
       while (true) {
@@ -38,8 +35,8 @@ export const getOpenAIResponse = async (
           break;
         }
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim());
+        const text = new TextDecoder().decode(value);
+        const lines = text.split('\n').filter(line => line.trim());
         
         for (const line of lines) {
           if (!line.startsWith('data: ')) continue;
@@ -54,7 +51,7 @@ export const getOpenAIResponse = async (
               fullResponse += parsed.content;
             }
           } catch (e) {
-            console.error('Error parsing chunk:', e);
+            console.error('Error parsing line:', e);
           }
         }
       }

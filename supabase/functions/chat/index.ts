@@ -52,32 +52,57 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const transformStream = new TransformStream({
-      async transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
-        const lines = text.split('\n').filter(line => line.trim() !== '');
+    // Create a new ReadableStream with a custom controller
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = response.body?.getReader();
+        if (!reader) {
+          controller.close();
+          return;
+        }
+
+        const decoder = new TextDecoder();
         
-        for (const line of lines) {
-          if (line.includes('[DONE]')) continue;
-          
-          if (line.startsWith('data: ')) {
-            try {
-              const json = JSON.parse(line.slice(6));
-              const content = json.choices[0]?.delta?.content || '';
-              if (content) {
-                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ content })}\n\n`));
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+              controller.close();
+              break;
+            }
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n').filter(line => line.trim());
+            
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices[0]?.delta?.content || '';
+                if (content) {
+                  controller.enqueue(`data: ${JSON.stringify({ content })}\n\n`);
+                }
+              } catch (error) {
+                console.error('Error parsing chunk:', error);
               }
-            } catch (error) {
-              console.error('Error parsing chunk:', error);
-              console.error('Problematic line:', line);
             }
           }
+        } catch (error) {
+          console.error('Stream reading error:', error);
+          controller.error(error);
+        } finally {
+          reader.releaseLock();
         }
-      },
+      }
     });
 
-    return new Response(response.body?.pipeThrough(transformStream), {
-      headers: corsHeaders,
+    return new Response(stream, {
+      headers: corsHeaders
     });
 
   } catch (error) {
