@@ -23,7 +23,12 @@ serve(async (req) => {
       throw new Error('Missing required parameters');
     }
 
-    console.log(`Processing request for dosha: ${dosha}, category: ${category}, message: ${message}`);
+    console.log(`Processing chat request - Dosha: ${dosha}, Category: ${category}, Message: ${message}`);
+
+    const systemMessage = `Ты - эксперт по Аюрведе, специализирующийся на консультациях по доше ${dosha}. 
+    Сейчас пользователь хочет получить информацию в категории ${category}.
+    Давай краткие, но информативные ответы, основанные на принципах Аюрведы.
+    Используй простой и понятный язык. Отвечай на русском языке.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -34,14 +39,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          {
-            role: 'system',
-            content: `Ты - эксперт по Аюрведе, специализирующийся на консультациях по доше ${dosha}. 
-            Сейчас пользователь хочет получить информацию в категории ${category}.
-            Давай краткие, но информативные ответы, основанные на принципах Аюрведы.
-            Используй простой и понятный язык. Отвечай на русском языке.
-            Ограничь ответ 2-3 короткими абзацами.`
-          },
+          { role: 'system', content: systemMessage },
           { role: 'user', content: message }
         ],
         stream: true,
@@ -50,6 +48,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
@@ -60,57 +59,42 @@ serve(async (req) => {
 
     const reader = stream.getReader();
     const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
 
-    const streamResponse = new ReadableStream({
-      async start(controller) {
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              controller.close();
-              break;
-            }
-
-            const text = new TextDecoder().decode(value);
-            const lines = text.split('\n').filter(line => line.trim());
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                
-                if (data === '[DONE]') {
-                  continue;
-                }
-                
-                try {
-                  const parsed = JSON.parse(data);
-                  const content = parsed.choices[0]?.delta?.content || '';
-                  if (content) {
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
-                  }
-                } catch (e) {
-                  console.error('Error parsing JSON:', e);
-                  console.error('Problematic line:', line);
-                }
+    const transformStream = new TransformStream({
+      async transform(chunk, controller) {
+        const text = decoder.decode(chunk);
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        
+        for (const line of lines) {
+          if (line.includes('[DONE]')) continue;
+          
+          if (line.startsWith('data: ')) {
+            try {
+              const json = JSON.parse(line.slice(6));
+              const content = json.choices[0]?.delta?.content || '';
+              if (content) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
               }
+            } catch (error) {
+              console.error('Error parsing chunk:', error);
+              console.error('Problematic line:', line);
             }
           }
-        } catch (error) {
-          console.error('Stream processing error:', error);
-          controller.error(error);
         }
       },
     });
 
-    return new Response(streamResponse, { headers: corsHeaders });
+    return new Response(stream.pipeThrough(transformStream), {
+      headers: corsHeaders,
+    });
 
   } catch (error) {
     console.error('Error in chat function:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message || 'Internal Server Error',
-        details: "Пожалуйста, подождите немного и попробуйте снова."
+        details: "Пожалуйста, попробуйте позже"
       }),
       {
         status: 500,
