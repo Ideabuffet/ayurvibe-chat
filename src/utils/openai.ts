@@ -12,19 +12,8 @@ export const getOpenAIResponse = async (
     });
 
     if (error) {
-      let errorBody;
-      try {
-        errorBody = JSON.parse(error.message);
-      } catch {
-        errorBody = { error: error.message };
-      }
-
-      if (error.status === 429 || errorBody.error?.includes('Rate limit')) {
-        const retryAfter = errorBody.retryAfter || 20;
-        throw new Error(`Превышен лимит запросов. Пожалуйста, подождите ${retryAfter} секунд и попробуйте снова.`);
-      }
-      
-      throw new Error(errorBody.error || "Ошибка при получении ответа");
+      console.error('Supabase function error:', error);
+      throw new Error(error.message || "Ошибка при получении ответа");
     }
 
     if (!data) {
@@ -48,7 +37,7 @@ export const getOpenAIResponse = async (
       }
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter(line => line.trim() !== '');
+      const lines = chunk.split('\n').filter(line => line.trim());
       
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
@@ -63,7 +52,8 @@ export const getOpenAIResponse = async (
             fullResponse += parsed.content;
           }
         } catch (e) {
-          console.error('Error parsing JSON:', e);
+          console.error('Error parsing chunk:', e);
+          console.error('Problematic chunk:', chunk);
         }
       }
     }
@@ -71,7 +61,10 @@ export const getOpenAIResponse = async (
     return fullResponse;
 
   } catch (error: any) {
-    console.error("Error calling Edge Function:", error);
+    console.error("Error in getOpenAIResponse:", error);
+    if (error.message.includes('Rate limit')) {
+      throw new Error("Превышен лимит запросов. Пожалуйста, подождите немного и попробуйте снова.");
+    }
     throw error;
   }
 };

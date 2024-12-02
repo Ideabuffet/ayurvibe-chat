@@ -50,75 +50,65 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.json();
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({
-            error: 'Rate limit reached',
-            details: 'Пожалуйста, подождите 20 секунд и попробуйте снова.',
-            retryAfter: 20
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
-
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
     const stream = response.body;
+    if (!stream) {
+      throw new Error('No response stream from OpenAI');
+    }
+
     const reader = stream.getReader();
     const encoder = new TextEncoder();
 
-    return new Response(
-      new ReadableStream({
-        async start(controller) {
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-              
-              if (done) {
-                controller.close();
-                break;
-              }
+    const streamResponse = new ReadableStream({
+      async start(controller) {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+              controller.close();
+              break;
+            }
 
-              const text = new TextDecoder().decode(value);
-              const lines = text.split('\n').filter(line => line.trim() !== '');
-              
-              for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                  const data = line.slice(6);
-                  if (data === '[DONE]') continue;
-                  
-                  try {
-                    const parsed = JSON.parse(data);
-                    const token = parsed.choices[0]?.delta?.content || '';
-                    if (token) {
-                      const message = JSON.stringify({ content: token });
-                      controller.enqueue(encoder.encode(`data: ${message}\n\n`));
-                    }
-                  } catch (e) {
-                    console.error('Error parsing JSON:', e);
-                    console.error('Problematic line:', line);
+            const text = new TextDecoder().decode(value);
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                
+                if (data === '[DONE]') {
+                  continue;
+                }
+                
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices[0]?.delta?.content || '';
+                  if (content) {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
                   }
+                } catch (e) {
+                  console.error('Error parsing JSON:', e);
+                  console.error('Problematic line:', line);
                 }
               }
             }
-          } catch (error) {
-            console.error('Stream reading error:', error);
-            controller.error(error);
           }
-        },
-      }),
-      { headers: corsHeaders }
-    );
+        } catch (error) {
+          console.error('Stream processing error:', error);
+          controller.error(error);
+        }
+      },
+    });
+
+    return new Response(streamResponse, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Error in chat function:', error);
     return new Response(
-      JSON.stringify({
+      JSON.stringify({ 
         error: error.message || 'Internal Server Error',
         details: "Пожалуйста, подождите немного и попробуйте снова."
       }),
