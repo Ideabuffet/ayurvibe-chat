@@ -38,17 +38,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     scrollToBottom();
   }, [messages]);
 
-  const typeMessage = async (text: string, updateMessage: (content: string) => void) => {
-    let currentText = '';
-    const chars = text.split('');
-    
-    for (const char of chars) {
-      await new Promise(resolve => setTimeout(resolve, 15));
-      currentText += char;
-      updateMessage(currentText);
-    }
-  };
-
   useEffect(() => {
     const initializeChat = async () => {
       if (category) {
@@ -57,30 +46,33 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
           let initialMessage;
           if (category === 'herbs') {
             initialMessage = getRandomHerbalIntro();
+            setMessages([{
+              content: initialMessage,
+              isAi: true,
+              timestamp: new Date()
+            }]);
           } else {
-            initialMessage = await getOpenAIResponse(
+            // Add empty message first
+            setMessages([{
+              content: "",
+              isAi: true,
+              timestamp: new Date()
+            }]);
+
+            // Stream the initial message
+            await getOpenAIResponse(
               "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
               dosha,
-              category
+              category,
+              (token) => {
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  newMessages[0].content = translateAyurvedaTerms(newMessages[0].content + token);
+                  return newMessages;
+                });
+              }
             );
           }
-          initialMessage = translateAyurvedaTerms(initialMessage);
-          
-          // Add empty message first
-          setMessages([{
-            content: "",
-            isAi: true,
-            timestamp: new Date()
-          }]);
-
-          // Type out the message character by character
-          await typeMessage(initialMessage, (content) => {
-            setMessages(prev => {
-              const newMessages = [...prev];
-              newMessages[0].content = content;
-              return newMessages;
-            });
-          });
         } catch (error: any) {
           toast({
             title: "Ошибка",
@@ -125,17 +117,18 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     setIsTyping(true);
 
     try {
-      const response = await getOpenAIResponse(message, dosha, category);
-      const translatedResponse = translateAyurvedaTerms(response);
-      
-      // Type out the response character by character
-      await typeMessage(translatedResponse, (content) => {
-        setMessages(prev => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1].content = content;
-          return newMessages;
-        });
-      });
+      await getOpenAIResponse(
+        message,
+        dosha,
+        category,
+        (token) => {
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].content = translateAyurvedaTerms(newMessages[newMessages.length - 1].content + token);
+            return newMessages;
+          });
+        }
+      );
     } catch (error: any) {
       setMessages(prev => prev.slice(0, -1));
       toast({

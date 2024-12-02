@@ -1,39 +1,47 @@
-import { supabase } from '@/integrations/supabase/client'
+import { supabase } from '@/integrations/supabase/client';
 
 export const getOpenAIResponse = async (
   message: string,
   dosha: string,
-  category: string
+  category: string,
+  onToken?: (token: string) => void
 ): Promise<string> => {
   try {
-    console.log('Calling Edge Function with:', { message, dosha, category });
-    
-    const { data, error } = await supabase.functions.invoke('chat', {
-      body: { message, dosha, category }
+    const { data: stream } = await supabase.functions.invoke('chat', {
+      body: { message, dosha, category },
+      responseType: 'stream',
     });
 
-    if (error) {
-      console.error('Supabase function error:', error);
-      throw new Error(error.message || "Ошибка при вызове функции");
-    }
-
-    if (!data) {
-      console.error('Empty response from server');
+    if (!stream) {
       throw new Error("Пустой ответ от сервера");
     }
 
-    if (!data.response && data.error) {
-      console.error('Server returned error:', data.error);
-      throw new Error(data.error);
+    const reader = stream.getReader();
+    let fullResponse = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) {
+        break;
+      }
+
+      // Convert the Uint8Array to a string
+      const text = new TextDecoder().decode(value);
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const token = line.slice(6);
+        
+        if (token && onToken) {
+          onToken(token);
+          fullResponse += token;
+        }
+      }
     }
 
-    if (typeof data.response !== 'string') {
-      console.error('Invalid response format:', data);
-      throw new Error("Неверный формат ответа от сервера");
-    }
-
-    console.log('Successfully received response from Edge Function');
-    return data.response;
+    return fullResponse;
 
   } catch (error: any) {
     console.error("Error calling Edge Function:", error);

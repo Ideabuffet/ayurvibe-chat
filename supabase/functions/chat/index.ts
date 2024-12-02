@@ -6,39 +6,24 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'application/json',
+  'Content-Type': 'text/event-stream',
+  'Cache-Control': 'no-cache',
+  'Connection': 'keep-alive',
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key not configured');
-    }
-
-    // Parse request body
-    let body;
-    try {
-      body = await req.json();
-    } catch (e) {
-      console.error('Failed to parse request body:', e);
-      throw new Error('Invalid request format');
-    }
-
-    const { message, dosha, category } = body;
-    console.log('Processing request:', { message, dosha, category });
+    const { message, dosha, category } = await req.json();
 
     if (!message || !dosha || !category) {
-      console.error('Missing required parameters:', { message, dosha, category });
       throw new Error('Missing required parameters');
     }
 
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -57,36 +42,63 @@ serve(async (req) => {
           },
           { role: 'user', content: message }
         ],
-        temperature: 0.7,
-        max_tokens: 500, // Уменьшаем максимальное количество токенов
+        stream: true,
       }),
     });
 
-    if (!openAIResponse.ok) {
-      const error = await openAIResponse.json();
-      console.error('OpenAI API error:', error);
+    if (!response.ok) {
+      const error = await response.json();
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const data = await openAIResponse.json();
-    console.log('OpenAI response received successfully');
+    const stream = response.body;
+    const reader = stream?.getReader();
+    const encoder = new TextEncoder();
 
-    if (!data.choices?.[0]?.message?.content) {
-      console.error('Invalid OpenAI response format:', data);
-      throw new Error('Invalid response from OpenAI');
-    }
+    const stream_response = new ReadableStream({
+      async start(controller) {
+        try {
+          if (!reader) return;
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+              controller.close();
+              break;
+            }
 
-    return new Response(
-      JSON.stringify({
-        response: data.choices[0].message.content,
-        status: 'success'
-      }),
-      { headers: corsHeaders }
-    );
+            const text = new TextDecoder().decode(value);
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            
+            for (const line of lines) {
+              if (line.includes('[DONE]')) continue;
+              if (!line.startsWith('data: ')) continue;
+              
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              
+              try {
+                const json = JSON.parse(data);
+                const token = json.choices[0]?.delta?.content;
+                if (token) {
+                  controller.enqueue(encoder.encode(`data: ${token}\n\n`));
+                }
+              } catch (e) {
+                console.error('Error parsing JSON:', e);
+              }
+            }
+          }
+        } catch (e) {
+          controller.error(e);
+        }
+      },
+    });
+
+    return new Response(stream_response, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Error in chat function:', error);
-    
     return new Response(
       JSON.stringify({
         error: error.message || 'Internal Server Error',
@@ -94,7 +106,7 @@ serve(async (req) => {
       }),
       {
         status: 500,
-        headers: corsHeaders
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
