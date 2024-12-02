@@ -12,25 +12,33 @@ const corsHeaders = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      headers: corsHeaders,
-      status: 204
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY is not configured');
+      console.error('OpenAI API key not configured');
+      throw new Error('OpenAI API key not configured');
     }
 
-    const { message, dosha, category } = await req.json();
+    // Parse request body
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      console.error('Failed to parse request body:', e);
+      throw new Error('Invalid request format');
+    }
+
+    const { message, dosha, category } = body;
     console.log('Processing request:', { message, dosha, category });
 
     if (!message || !dosha || !category) {
+      console.error('Missing required parameters:', { message, dosha, category });
       throw new Error('Missing required parameters');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -53,32 +61,36 @@ serve(async (req) => {
       }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
+    if (!openAIResponse.ok) {
+      const error = await openAIResponse.json();
       console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const data = await response.json();
+    const data = await openAIResponse.json();
     console.log('OpenAI response received successfully');
-    
+
+    if (!data.choices?.[0]?.message?.content) {
+      console.error('Invalid OpenAI response format:', data);
+      throw new Error('Invalid response from OpenAI');
+    }
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         response: data.choices[0].message.content,
         status: 'success'
-      }), 
+      }),
       { headers: corsHeaders }
     );
 
   } catch (error) {
     console.error('Error in chat function:', error);
     
-    // Ensure we always return a properly formatted JSON response
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message || 'Internal Server Error',
-        details: "Пожалуйста, подождите немного и попробуйте снова." 
-      }), 
+        details: "Пожалуйста, подождите немного и попробуйте снова."
+      }),
       {
         status: 500,
         headers: corsHeaders
