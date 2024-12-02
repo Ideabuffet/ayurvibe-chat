@@ -33,8 +33,13 @@ export const getOpenAIResponse = async (
       throw new Error("Пустой ответ от сервера");
     }
 
-    const reader = new ReadableStreamDefaultReader(data);
     let fullResponse = '';
+    const reader = new Response(data).body?.getReader();
+    
+    if (!reader) {
+      throw new Error("Не удалось инициализировать чтение потока");
+    }
+
     const decoder = new TextDecoder();
 
     while (true) {
@@ -50,10 +55,18 @@ export const getOpenAIResponse = async (
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
         
-        const token = line.slice(6);
-        if (token && onToken) {
-          onToken(token);
-          fullResponse += token;
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        
+        try {
+          const parsed = JSON.parse(data);
+          const token = parsed.choices[0]?.delta?.content || '';
+          if (token && onToken) {
+            onToken(token);
+            fullResponse += token;
+          }
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
         }
       }
     }
