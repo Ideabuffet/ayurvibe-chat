@@ -31,7 +31,7 @@ export const DoshaQuiz = () => {
       if (session?.user?.id) {
         const { data } = await supabase
           .from('profiles')
-          .select('dosha')
+          .select('dosha, vata_score, pitta_score, kapha_score')
           .eq('id', session.user.id)
           .single();
         
@@ -45,6 +45,11 @@ export const DoshaQuiz = () => {
           const normalizedDosha = data.dosha.toLowerCase();
           const doshaType = doshaMap[normalizedDosha] || data.dosha as DoshaType;
           setSavedDosha(doshaType);
+          setSavedScores({
+            vata: data.vata_score || 0,
+            pitta: data.pitta_score || 0,
+            kapha: data.kapha_score || 0
+          });
           setShowingResults(true);
         }
       }
@@ -91,7 +96,12 @@ export const DoshaQuiz = () => {
         
         await supabase
           .from('profiles')
-          .update({ dosha: doshaTranslations[dominantDosha] })
+          .update({ 
+            dosha: doshaTranslations[dominantDosha],
+            vata_score: scores.vata,
+            pitta_score: scores.pitta,
+            kapha_score: scores.kapha
+          })
           .eq('id', session.user.id);
       }
       

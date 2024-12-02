@@ -86,16 +86,25 @@ export type Database = {
           created_at: string
           dosha: string | null
           id: string
+          kapha_score: number | null
+          pitta_score: number | null
+          vata_score: number | null
         }
         Insert: {
           created_at?: string
           dosha?: string | null
           id: string
+          kapha_score?: number | null
+          pitta_score?: number | null
+          vata_score?: number | null
         }
         Update: {
           created_at?: string
           dosha?: string | null
           id?: string
+          kapha_score?: number | null
+          pitta_score?: number | null
+          vata_score?: number | null
         }
         Relationships: []
       }
