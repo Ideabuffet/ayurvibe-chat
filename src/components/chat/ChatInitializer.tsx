@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { getOpenAIResponse } from "@/utils/openai";
 import { useToast } from "@/components/ui/use-toast";
 import { DoshaType } from "@/types/dosha";
+import { translateAyurvedaTerms } from "@/utils/translations";
 
 interface ChatInitializerProps {
   category: string;
