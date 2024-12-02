@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,6 +23,14 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
+    }
+
+    // If it's the initial message in general category, return simple greeting
+    if (category === 'general' && message === "initial") {
+      return new Response(
+        JSON.stringify({ content: "Здравствуйте! Чем могу помочь?" }),
+        { headers: corsHeaders }
+      );
     }
 
     const categoryPrompt = getCategoryPrompt(category);
@@ -111,7 +118,7 @@ serve(async (req) => {
 
 const getCategoryPrompt = (category: string) => {
   const prompts: Record<string, string> = {
-    general: `Ты - эксперт по Аюрведе. Если это первое сообщение в чате, просто поздоровайся и напиши "Чем могу помочь?". В остальных случаях давай краткие, но информативные ответы, основанные на принципах Аюрведы.`,
+    general: `Ты - эксперт по Аюрведе. Давай краткие, но информативные ответы, основанные на принципах Аюрведы.`,
     health: `Ты - аюрведический консультант по здоровью. Давай конкретные рекомендации по поддержанию баланса доши.`,
     meditation: `Ты - специалист по медитации и пранаяме в Аюрведе. Давай рекомендации по практикам медитации и дыхательным упражнениям.`,
     routine: `Ты - специалист по аюрведическому распорядку дня (Диначарья). Давай рекомендации по ежедневным практикам.`,
