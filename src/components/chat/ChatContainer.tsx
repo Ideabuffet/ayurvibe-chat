@@ -54,11 +54,25 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
             );
           }
           initialMessage = translateAyurvedaTerms(initialMessage);
+          
+          // Add empty message first
           setMessages([{
-            content: initialMessage,
+            content: "",
             isAi: true,
             timestamp: new Date()
           }]);
+
+          // Then type it out word by word
+          const words = initialMessage.split(' ');
+          for (let i = 0; i < words.length; i++) {
+            await new Promise(resolve => setTimeout(resolve, 30)); // Faster typing speed
+            setMessages(prev => {
+              const newMessages = [...prev];
+              const currentContent = newMessages[0].content;
+              newMessages[0].content = currentContent + (currentContent ? ' ' : '') + words[i];
+              return newMessages;
+            });
+          }
         } catch (error: any) {
           toast({
             title: "Ошибка",
@@ -93,7 +107,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       timestamp: new Date()
     }]);
 
-    // Add placeholder for AI response
+    // Add empty AI message
     setMessages(prev => [...prev, {
       content: "",
       isAi: true,
@@ -107,9 +121,9 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       const translatedResponse = translateAyurvedaTerms(response);
       const words = translatedResponse.split(' ');
       
-      // Update the last message (AI response) word by word
+      // Type out the response word by word
       for (let i = 0; i < words.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay between words
+        await new Promise(resolve => setTimeout(resolve, 30)); // Faster typing speed
         setMessages(prev => {
           const newMessages = [...prev];
           const currentContent = newMessages[newMessages.length - 1].content;
@@ -118,7 +132,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
         });
       }
     } catch (error: any) {
-      // Remove the placeholder message in case of error
       setMessages(prev => prev.slice(0, -1));
       toast({
         title: "Ошибка",
