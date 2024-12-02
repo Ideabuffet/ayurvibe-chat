@@ -6,9 +6,7 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'text/event-stream',
-  'Cache-Control': 'no-cache',
-  'Connection': 'keep-alive',
+  'Content-Type': 'application/json'
 };
 
 serve(async (req) => {
@@ -41,7 +39,7 @@ serve(async (req) => {
           { role: 'system', content: systemMessage },
           { role: 'user', content: message }
         ],
-        stream: true,
+        stream: false,
       }),
     });
 
@@ -51,52 +49,10 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const reader = response.body?.getReader();
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
+    const data = await response.json();
+    const content = data.choices[0].message.content;
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              controller.close();
-              break;
-            }
-
-            const text = decoder.decode(value);
-            const lines = text.split('\n').filter(line => line.trim());
-            
-            for (const line of lines) {
-              if (!line.startsWith('data: ')) continue;
-              
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
-              
-              try {
-                const parsed = JSON.parse(data);
-                const content = parsed.choices[0]?.delta?.content || '';
-                if (content) {
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
-                }
-              } catch (error) {
-                console.error('Error parsing chunk:', error);
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Stream processing error:', error);
-          controller.error(error);
-        }
-      },
-      cancel() {
-        reader?.releaseLock();
-      }
-    });
-
-    return new Response(stream, {
+    return new Response(JSON.stringify({ content }), {
       headers: corsHeaders
     });
 
@@ -109,7 +65,7 @@ serve(async (req) => {
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: corsHeaders
       }
     );
   }
