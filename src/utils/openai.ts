@@ -7,7 +7,10 @@ export const getOpenAIResponse = async (
 ): Promise<string> => {
   try {
     const { data, error } = await supabase.functions.invoke('chat', {
-      body: { message, dosha, category }
+      body: { message, dosha, category },
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
 
     if (error) throw new Error(error.message)
