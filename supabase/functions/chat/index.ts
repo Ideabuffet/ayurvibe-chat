@@ -18,12 +18,11 @@ serve(async (req) => {
 
   try {
     const { message, dosha, category } = await req.json();
+    console.log(`Processing request - Message: ${message}, Dosha: ${dosha}, Category: ${category}`);
 
     if (!message || !dosha || !category) {
       throw new Error('Missing required parameters');
     }
-
-    console.log(`Processing chat request - Dosha: ${dosha}, Category: ${category}, Message: ${message}`);
 
     const systemMessage = `Ты - эксперт по Аюрведе, специализирующийся на консультациях по доше ${dosha}. 
     Сейчас пользователь хочет получить информацию в категории ${category}.
@@ -52,32 +51,52 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    // Create a TransformStream to process the chunks
-    const transformer = new TransformStream({
-      async transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
-        const lines = text.split('\n').filter(line => line.trim());
-        
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          
-          const data = line.slice(6);
-          if (data === '[DONE]') continue;
-          
-          try {
-            const parsed = JSON.parse(data);
-            const content = parsed.choices[0]?.delta?.content || '';
-            if (content) {
-              controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ content })}\n\n`));
+    const reader = response.body?.getReader();
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+              controller.close();
+              break;
             }
-          } catch (error) {
-            console.error('Error parsing chunk:', error);
+
+            const text = decoder.decode(value);
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices[0]?.delta?.content || '';
+                if (content) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                }
+              } catch (error) {
+                console.error('Error parsing chunk:', error);
+              }
+            }
           }
+        } catch (error) {
+          console.error('Stream processing error:', error);
+          controller.error(error);
         }
+      },
+      cancel() {
+        reader?.releaseLock();
       }
     });
 
-    return new Response(response.body?.pipeThrough(transformer), {
+    return new Response(stream, {
       headers: corsHeaders
     });
 
