@@ -1,14 +1,22 @@
 import { cn } from "@/lib/utils";
 import { Info } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChatMessageProps {
   content: string;
   isAi: boolean;
   timestamp: Date;
   isFirstMessage?: boolean;
+  isLoading?: boolean;
 }
 
-export const ChatMessage = ({ content, isAi, timestamp, isFirstMessage = false }: ChatMessageProps) => {
+export const ChatMessage = ({ 
+  content, 
+  isAi, 
+  timestamp, 
+  isFirstMessage = false,
+  isLoading = false 
+}: ChatMessageProps) => {
   return (
     <div
       className={cn(
@@ -27,13 +35,22 @@ export const ChatMessage = ({ content, isAi, timestamp, isFirstMessage = false }
         {isFirstMessage && isAi && (
           <Info className="absolute -left-7 top-2 w-5 h-5 text-ayurveda-primary" />
         )}
-        <p className="text-sm md:text-base">{content}</p>
-        <span className="text-xs opacity-70">
-          {timestamp.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[200px] bg-white/20" />
+            <Skeleton className="h-4 w-[160px] bg-white/20" />
+          </div>
+        ) : (
+          <>
+            <p className="text-sm md:text-base">{content}</p>
+            <span className="text-xs opacity-70">
+              {timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

@@ -53,7 +53,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
               category
             );
           }
-          // Translate English terms to Russian before displaying
           initialMessage = translateAyurvedaTerms(initialMessage);
           setMessages([{
             content: initialMessage,
@@ -77,39 +76,6 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     initializeChat();
   }, [dosha, category, toast]);
 
-  const simulateTyping = async (response: string) => {
-    setIsTyping(true);
-    
-    // Translate the response before simulating typing
-    const translatedResponse = translateAyurvedaTerms(response);
-    const words = translatedResponse.split(' ');
-    let currentResponse = '';
-    let wordIndex = 0;
-    
-    const typingInterval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentResponse += words[wordIndex] + ' ';
-        setMessages(prev => {
-          const newMessages = [...prev];
-          if (newMessages[newMessages.length - 1]?.isAi) {
-            newMessages[newMessages.length - 1].content = currentResponse;
-          } else {
-            newMessages.push({
-              content: currentResponse,
-              isAi: true,
-              timestamp: new Date()
-            });
-          }
-          return newMessages;
-        });
-        wordIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setIsTyping(false);
-      }
-    }, 100);
-  };
-
   const handleSendMessage = async (message: string) => {
     if (isTyping) {
       toast({
@@ -120,21 +86,47 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       return;
     }
 
+    // Add user message
     setMessages(prev => [...prev, {
       content: message,
       isAi: false,
       timestamp: new Date()
     }]);
+
+    // Add placeholder for AI response
+    setMessages(prev => [...prev, {
+      content: "",
+      isAi: true,
+      timestamp: new Date()
+    }]);
     
+    setIsTyping(true);
+
     try {
       const response = await getOpenAIResponse(message, dosha, category);
-      simulateTyping(response);
+      const translatedResponse = translateAyurvedaTerms(response);
+      const words = translatedResponse.split(' ');
+      
+      // Update the last message (AI response) word by word
+      for (let i = 0; i < words.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay between words
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const currentContent = newMessages[newMessages.length - 1].content;
+          newMessages[newMessages.length - 1].content = currentContent + (currentContent ? ' ' : '') + words[i];
+          return newMessages;
+        });
+      }
     } catch (error: any) {
+      // Remove the placeholder message in case of error
+      setMessages(prev => prev.slice(0, -1));
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось получить ответ",
         variant: "destructive",
       });
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -144,7 +136,12 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
         <div className="space-y-4 max-h-[500px] overflow-y-auto">
           {isInitializing ? (
             <div className="text-center text-gray-500">
-              Загрузка...
+              <ChatMessage
+                content="Загрузка..."
+                isAi={true}
+                timestamp={new Date()}
+                isLoading={true}
+              />
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center text-gray-500">
@@ -158,6 +155,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
                 isAi={message.isAi}
                 timestamp={message.timestamp}
                 isFirstMessage={index === 0}
+                isLoading={isTyping && index === messages.length - 1 && message.isAi}
               />
             ))
           )}
