@@ -1,14 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Leaf,
-  Heart,
-  BookOpen,
-  Droplets,
-  Flower2,
-  ArrowRight
-} from "lucide-react";
+import { Heart, Leaf, BookOpen, Droplets, Flower2 } from "lucide-react";
 import { HeroSection } from "@/components/services/HeroSection";
 import { FeatureGrid } from "@/components/services/FeatureGrid";
 
@@ -49,7 +42,7 @@ const Services = () => {
   ];
 
   return (
-    <div>
+    <div className="min-h-screen">
       <HeroSection />
       <FeatureGrid />
       <div className="container mx-auto px-4 py-12">
@@ -65,7 +58,7 @@ const Services = () => {
           {services.map((service) => (
             <Card 
               key={service.title}
-              className="p-4 hover:shadow-lg transition-shadow duration-300 bg-white/80 backdrop-blur-sm"
+              className="p-4 bg-white hover:shadow-lg transition-shadow duration-300"
             >
               <div className="flex flex-col items-center text-center space-y-3">
                 {service.icon}
@@ -82,7 +75,6 @@ const Services = () => {
                   onClick={() => navigate(service.path)}
                 >
                   Подробнее
-                  <ArrowRight className="ml-2 h-3 w-3" />
                 </Button>
               </div>
             </Card>
