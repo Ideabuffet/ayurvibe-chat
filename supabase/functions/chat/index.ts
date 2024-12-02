@@ -48,7 +48,9 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.json();
-      if (error.error?.message?.includes('Rate limit reached')) {
+      
+      // Handle rate limit error
+      if (response.status === 429 || error.error?.message?.includes('Rate limit')) {
         return new Response(
           JSON.stringify({
             error: 'Rate limit reached',
@@ -61,6 +63,7 @@ serve(async (req) => {
           }
         );
       }
+
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 

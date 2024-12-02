@@ -1,7 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export const getOpenAIResponse = async (
   message: string,
   dosha: string,
@@ -14,13 +12,21 @@ export const getOpenAIResponse = async (
     });
 
     if (error) {
-      // Check if it's a rate limit error
-      const errorBody = JSON.parse(error.message);
-      if (error.status === 429 || errorBody.error === 'Rate limit reached') {
+      // Parse error response
+      let errorBody;
+      try {
+        errorBody = JSON.parse(error.message);
+      } catch {
+        errorBody = { error: error.message };
+      }
+
+      // Handle rate limit error specifically
+      if (error.status === 429 || errorBody.error?.includes('Rate limit')) {
         const retryAfter = errorBody.retryAfter || 20;
         throw new Error(`Превышен лимит запросов. Пожалуйста, подождите ${retryAfter} секунд и попробуйте снова.`);
       }
-      throw error;
+      
+      throw new Error(errorBody.error || "Ошибка при получении ответа");
     }
 
     if (!data) {
@@ -56,6 +62,6 @@ export const getOpenAIResponse = async (
 
   } catch (error: any) {
     console.error("Error calling Edge Function:", error);
-    throw new Error(error.message || "Ошибка при получении ответа");
+    throw error;
   }
 };
