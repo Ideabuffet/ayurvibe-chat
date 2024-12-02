@@ -38,6 +38,17 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     scrollToBottom();
   }, [messages]);
 
+  const typeMessage = async (text: string, updateMessage: (content: string) => void) => {
+    let currentText = '';
+    const chars = text.split('');
+    
+    for (const char of chars) {
+      await new Promise(resolve => setTimeout(resolve, 15));
+      currentText += char;
+      updateMessage(currentText);
+    }
+  };
+
   useEffect(() => {
     const initializeChat = async () => {
       if (category) {
@@ -62,17 +73,14 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
             timestamp: new Date()
           }]);
 
-          // Then type it out word by word
-          const words = initialMessage.split(' ');
-          for (let i = 0; i < words.length; i++) {
-            await new Promise(resolve => setTimeout(resolve, 30)); // Faster typing speed
+          // Type out the message character by character
+          await typeMessage(initialMessage, (content) => {
             setMessages(prev => {
               const newMessages = [...prev];
-              const currentContent = newMessages[0].content;
-              newMessages[0].content = currentContent + (currentContent ? ' ' : '') + words[i];
+              newMessages[0].content = content;
               return newMessages;
             });
-          }
+          });
         } catch (error: any) {
           toast({
             title: "Ошибка",
@@ -119,18 +127,15 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     try {
       const response = await getOpenAIResponse(message, dosha, category);
       const translatedResponse = translateAyurvedaTerms(response);
-      const words = translatedResponse.split(' ');
       
-      // Type out the response word by word
-      for (let i = 0; i < words.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 30)); // Faster typing speed
+      // Type out the response character by character
+      await typeMessage(translatedResponse, (content) => {
         setMessages(prev => {
           const newMessages = [...prev];
-          const currentContent = newMessages[newMessages.length - 1].content;
-          newMessages[newMessages.length - 1].content = currentContent + (currentContent ? ' ' : '') + words[i];
+          newMessages[newMessages.length - 1].content = content;
           return newMessages;
         });
-      }
+      });
     } catch (error: any) {
       setMessages(prev => prev.slice(0, -1));
       toast({
