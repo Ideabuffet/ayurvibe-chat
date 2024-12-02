@@ -31,6 +31,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const [retryTimeout, setRetryTimeout] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [currentResponse, setCurrentResponse] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,15 +60,22 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
               timestamp: new Date()
             }]);
 
+            setCurrentResponse("");
             await getOpenAIResponse(
               "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме",
               dosha,
               category,
               (token) => {
-                setMessages(prev => {
-                  const newMessages = [...prev];
-                  newMessages[0].content = translateAyurvedaTerms(newMessages[0].content + token);
-                  return newMessages;
+                setCurrentResponse(prev => {
+                  const newResponse = prev + token;
+                  setMessages(prevMessages => {
+                    const newMessages = [...prevMessages];
+                    if (newMessages[0]) {
+                      newMessages[0].content = translateAyurvedaTerms(newResponse);
+                    }
+                    return newMessages;
+                  });
+                  return newResponse;
                 });
               }
             );
@@ -121,6 +129,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
     }]);
     
     setIsTyping(true);
+    setCurrentResponse("");
 
     try {
       await getOpenAIResponse(
@@ -128,10 +137,16 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
         dosha,
         category,
         (token) => {
-          setMessages(prev => {
-            const newMessages = [...prev];
-            newMessages[newMessages.length - 1].content = translateAyurvedaTerms(newMessages[newMessages.length - 1].content + token);
-            return newMessages;
+          setCurrentResponse(prev => {
+            const newResponse = prev + token;
+            setMessages(prevMessages => {
+              const newMessages = [...prevMessages];
+              if (newMessages[newMessages.length - 1]) {
+                newMessages[newMessages.length - 1].content = translateAyurvedaTerms(newResponse);
+              }
+              return newMessages;
+            });
+            return newResponse;
           });
         }
       );
