@@ -13,8 +13,15 @@ export const getOpenAIResponse = async (
       }
     })
 
-    if (error) throw new Error(error.message)
-    if (!data?.response) throw new Error("Пустой ответ от сервера")
+    if (error) {
+      console.error('Supabase function error:', error)
+      throw new Error(error.message || "Ошибка при вызове функции")
+    }
+
+    if (!data?.response) {
+      console.error('Empty response from server:', data)
+      throw new Error("Пустой ответ от сервера")
+    }
 
     return data.response
 
