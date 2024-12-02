@@ -49,11 +49,19 @@ export const getOpenAIResponse = async (
       
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
-        const token = line.slice(6);
         
-        if (token && onToken) {
-          onToken(token);
-          fullResponse += token;
+        const jsonData = line.slice(6);
+        if (jsonData === '[DONE]') continue;
+        
+        try {
+          const parsed = JSON.parse(jsonData);
+          const token = parsed.choices[0]?.delta?.content || '';
+          if (token && onToken) {
+            onToken(token);
+            fullResponse += token;
+          }
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
         }
       }
     }

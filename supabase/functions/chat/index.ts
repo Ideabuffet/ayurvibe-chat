@@ -23,6 +23,8 @@ serve(async (req) => {
       throw new Error('Missing required parameters');
     }
 
+    console.log(`Processing request for dosha: ${dosha}, category: ${category}`);
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -49,8 +51,7 @@ serve(async (req) => {
     if (!response.ok) {
       const error = await response.json();
       
-      // Handle rate limit error
-      if (response.status === 429 || error.error?.message?.includes('Rate limit')) {
+      if (response.status === 429) {
         return new Response(
           JSON.stringify({
             error: 'Rate limit reached',
