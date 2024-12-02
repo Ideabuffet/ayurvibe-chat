@@ -7,16 +7,15 @@ export const getOpenAIResponse = async (
   onToken?: (token: string) => void
 ): Promise<string> => {
   try {
-    const { data: stream } = await supabase.functions.invoke('chat', {
-      body: { message, dosha, category },
-      responseType: 'stream',
+    const { data } = await supabase.functions.invoke('chat', {
+      body: { message, dosha, category }
     });
 
-    if (!stream) {
+    if (!data) {
       throw new Error("Пустой ответ от сервера");
     }
 
-    const reader = stream.getReader();
+    const reader = data.getReader();
     let fullResponse = '';
 
     while (true) {
