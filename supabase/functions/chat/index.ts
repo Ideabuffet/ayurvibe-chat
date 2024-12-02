@@ -1,10 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'application/json'
 };
 
 serve(async (req) => {
@@ -26,7 +25,7 @@ serve(async (req) => {
     }
 
     // If it's the initial message in general category, return simple greeting
-    if (category === 'general' && message === "initial") {
+    if (category === 'general' && message === "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме") {
       return new Response(
         JSON.stringify({ content: "Здравствуйте! Чем могу помочь?" }),
         { headers: corsHeaders }
@@ -57,7 +56,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: message }
@@ -124,6 +123,7 @@ const getCategoryPrompt = (category: string) => {
     routine: `Ты - специалист по аюрведическому распорядку дня (Диначарья). Давай рекомендации по ежедневным практикам.`,
     herbs: `Ты - специалист по аюрведическим травам. Рекомендуй конкретные травы и способы их применения.`,
     diet: `Ты - специалист по аюрведическому питанию. Давай подробные рекомендации по диете.`,
+    lifestyle: `Ты - специалист по аюрведическому образу жизни. Давай рекомендации по ежедневным практикам и привычкам.`,
     chronic: `Ты - специалист по управлению хроническими состояниями в Аюрведе. Давай рекомендации по образу жизни.`,
     detox: `Ты - специалист по аюрведическому очищению. Давай рекомендации по детоксикации.`,
     stress: `Ты - специалист по управлению стрессом в Аюрведе. Давай рекомендации по эмоциональному балансу.`,
