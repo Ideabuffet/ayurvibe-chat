@@ -9,23 +9,26 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 const Header = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { translate } = useLanguage();
 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
       navigate("/login");
       toast({
-        title: "Выход выполнен успешно",
-        description: "Вы успешно вышли из системы",
+        title: translate("logout_success"),
+        description: translate("logout_success_message"),
       });
     } catch (error) {
       toast({
-        title: "Ошибка",
-        description: "Не удалось выйти из системы",
+        title: translate("error"),
+        description: translate("logout_error_message"),
         variant: "destructive",
       });
     }
@@ -46,36 +49,36 @@ const Header = () => {
             to="/services" 
             className="text-ayurveda-primary hover:text-ayurveda-accent transition-colors"
           >
-            Главная страница
+            {translate("home")}
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger className="text-ayurveda-primary hover:text-ayurveda-accent transition-colors flex items-center gap-1">
-              Услуги <ChevronDown className="h-4 w-4" />
+              {translate("services")} <ChevronDown className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-ayurveda-background border-ayurveda-accent/20">
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
                 <Link to="/consultation" className="w-full">
-                  Консультация у доктора
+                  {translate("consultation")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
                 <Link to="/medicine" className="w-full">
-                  Подбор лекарств
+                  {translate("medicine")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
                 <Link to="/education" className="w-full">
-                  Обучение Аюрведе
+                  {translate("education")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
                 <Link to="/detox" className="w-full">
-                  Детокс программа
+                  {translate("detox")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-ayurveda-accent/10">
                 <Link to="/panchakarma" className="w-full">
-                  Панчакарма в Индии
+                  {translate("panchakarma")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -84,8 +87,9 @@ const Header = () => {
             to="/chat/dosha" 
             className="text-ayurveda-primary hover:text-ayurveda-accent transition-colors"
           >
-            Определить дошу
+            {translate("determine_dosha")}
           </Link>
+          <LanguageSwitcher />
           <Button
             variant="ghost"
             size="icon"

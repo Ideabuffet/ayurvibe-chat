@@ -16,6 +16,7 @@ import Detox from "./pages/Detox";
 import Panchakarma from "./pages/Panchakarma";
 import ParticlesBackground from "./components/ParticlesBackground";
 import React from 'react';
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
@@ -48,86 +49,88 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <ParticlesBackground />
-          <div className="relative z-10">
-            <Header />
-            <main>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Navigate to="/services" replace />} />
-                <Route
-                  path="/services"
-                  element={
-                    <ProtectedRoute>
-                      <Services />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/consultation"
-                  element={
-                    <ProtectedRoute>
-                      <Consultation />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/medicine"
-                  element={
-                    <ProtectedRoute>
-                      <Medicine />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/education"
-                  element={
-                    <ProtectedRoute>
-                      <Education />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/detox"
-                  element={
-                    <ProtectedRoute>
-                      <Detox />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/panchakarma"
-                  element={
-                    <ProtectedRoute>
-                      <Panchakarma />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/chat/:category"
-                  element={
-                    <ProtectedRoute>
-                      <Index />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/chat/:category/:subcategory"
-                  element={
-                    <ProtectedRoute>
-                      <Index />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </main>
-          </div>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </BrowserRouter>
+      <LanguageProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <ParticlesBackground />
+            <div className="relative z-10">
+              <Header />
+              <main>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/" element={<Navigate to="/services" replace />} />
+                  <Route
+                    path="/services"
+                    element={
+                      <ProtectedRoute>
+                        <Services />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/consultation"
+                    element={
+                      <ProtectedRoute>
+                        <Consultation />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/medicine"
+                    element={
+                      <ProtectedRoute>
+                        <Medicine />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/education"
+                    element={
+                      <ProtectedRoute>
+                        <Education />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/detox"
+                    element={
+                      <ProtectedRoute>
+                        <Detox />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/panchakarma"
+                    element={
+                      <ProtectedRoute>
+                        <Panchakarma />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/chat/:category"
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/chat/:category/:subcategory"
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </main>
+            </div>
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </BrowserRouter>
+      </LanguageProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

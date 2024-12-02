@@ -81,6 +81,24 @@ export type Database = {
         }
         Relationships: []
       }
+      languages: {
+        Row: {
+          id: string
+          name: string
+          native_name: string
+        }
+        Insert: {
+          id: string
+          name: string
+          native_name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          native_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -167,6 +185,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      translations: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          language_id: string | null
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          language_id?: string | null
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          language_id?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translations_language_id_fkey"
+            columns: ["language_id"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
