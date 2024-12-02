@@ -693,7 +693,7 @@ export const doshaQuestions: Section[] = [
             kapha: 0,
           },
           {
-            text: "Хорошая vitality и выносливость",
+            text: "Хорошая выносливость и энергичность",
             vata: 0,
             pitta: 0,
             kapha: 2,
