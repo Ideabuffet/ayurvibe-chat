@@ -29,9 +29,9 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [retryTimeout, setRetryTimeout] = useState<number | null>(null);
+  const [currentResponse, setCurrentResponse] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [currentResponse, setCurrentResponse] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
