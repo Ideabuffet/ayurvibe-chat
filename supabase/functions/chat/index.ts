@@ -101,6 +101,7 @@ serve(async (req) => {
                     }
                   } catch (e) {
                     console.error('Error parsing JSON:', e);
+                    console.error('Problematic line:', line);
                   }
                 }
               }
@@ -111,9 +112,7 @@ serve(async (req) => {
           }
         },
       }),
-      { 
-        headers: corsHeaders
-      }
+      { headers: corsHeaders }
     );
 
   } catch (error) {
