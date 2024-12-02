@@ -52,18 +52,9 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const stream = response.body;
-    if (!stream) {
-      throw new Error('No response stream from OpenAI');
-    }
-
-    const reader = stream.getReader();
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-
     const transformStream = new TransformStream({
       async transform(chunk, controller) {
-        const text = decoder.decode(chunk);
+        const text = new TextDecoder().decode(chunk);
         const lines = text.split('\n').filter(line => line.trim() !== '');
         
         for (const line of lines) {
@@ -74,7 +65,7 @@ serve(async (req) => {
               const json = JSON.parse(line.slice(6));
               const content = json.choices[0]?.delta?.content || '';
               if (content) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ content })}\n\n`));
               }
             } catch (error) {
               console.error('Error parsing chunk:', error);
@@ -85,7 +76,7 @@ serve(async (req) => {
       },
     });
 
-    return new Response(stream.pipeThrough(transformStream), {
+    return new Response(response.body?.pipeThrough(transformStream), {
       headers: corsHeaders,
     });
 

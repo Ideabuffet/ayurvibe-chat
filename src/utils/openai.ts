@@ -21,7 +21,8 @@ export const getOpenAIResponse = async (
     }
 
     let fullResponse = '';
-    const reader = new Response(stream).body?.getReader();
+    const response = new Response(stream);
+    const reader = response.body?.getReader();
     
     if (!reader) {
       throw new Error("Не удалось инициализировать чтение потока");
@@ -54,7 +55,6 @@ export const getOpenAIResponse = async (
             }
           } catch (e) {
             console.error('Error parsing chunk:', e);
-            console.error('Problematic chunk:', chunk);
           }
         }
       }
