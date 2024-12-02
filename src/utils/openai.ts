@@ -1,5 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const getOpenAIResponse = async (
   message: string,
   dosha: string,
@@ -7,9 +9,19 @@ export const getOpenAIResponse = async (
   onToken?: (token: string) => void
 ): Promise<string> => {
   try {
-    const { data } = await supabase.functions.invoke('chat', {
+    const { data, error } = await supabase.functions.invoke('chat', {
       body: { message, dosha, category }
     });
+
+    if (error) {
+      // Check if it's a rate limit error
+      const errorBody = JSON.parse(error.message);
+      if (error.status === 429 || errorBody.error === 'Rate limit reached') {
+        const retryAfter = errorBody.retryAfter || 20;
+        throw new Error(`Превышен лимит запросов. Пожалуйста, подождите ${retryAfter} секунд и попробуйте снова.`);
+      }
+      throw error;
+    }
 
     if (!data) {
       throw new Error("Пустой ответ от сервера");

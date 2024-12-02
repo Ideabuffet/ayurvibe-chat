@@ -48,54 +48,23 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.json();
+      if (error.error?.message?.includes('Rate limit reached')) {
+        return new Response(
+          JSON.stringify({
+            error: 'Rate limit reached',
+            details: 'Пожалуйста, подождите 20 секунд и попробуйте снова.',
+            retryAfter: 20
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
+      }
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    const stream = response.body;
-    const reader = stream?.getReader();
-    const encoder = new TextEncoder();
-
-    const stream_response = new ReadableStream({
-      async start(controller) {
-        try {
-          if (!reader) return;
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              controller.close();
-              break;
-            }
-
-            const text = new TextDecoder().decode(value);
-            const lines = text.split('\n').filter(line => line.trim() !== '');
-            
-            for (const line of lines) {
-              if (line.includes('[DONE]')) continue;
-              if (!line.startsWith('data: ')) continue;
-              
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
-              
-              try {
-                const json = JSON.parse(data);
-                const token = json.choices[0]?.delta?.content;
-                if (token) {
-                  controller.enqueue(encoder.encode(`data: ${token}\n\n`));
-                }
-              } catch (e) {
-                console.error('Error parsing JSON:', e);
-              }
-            }
-          }
-        } catch (e) {
-          controller.error(e);
-        }
-      },
-    });
-
-    return new Response(stream_response, { headers: corsHeaders });
+    return new Response(response.body, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Error in chat function:', error);

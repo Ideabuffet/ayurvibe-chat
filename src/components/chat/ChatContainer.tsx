@@ -27,6 +27,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [retryTimeout, setRetryTimeout] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -100,6 +101,15 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       return;
     }
 
+    if (retryTimeout !== null) {
+      toast({
+        title: "Подождите",
+        description: `Пожалуйста, подождите ${retryTimeout} секунд перед следующим запросом`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Add user message
     setMessages(prev => [...prev, {
       content: message,
@@ -131,6 +141,24 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       );
     } catch (error: any) {
       setMessages(prev => prev.slice(0, -1));
+      
+      // Check if it's a rate limit error
+      if (error.message.includes('Превышен лимит запросов')) {
+        const seconds = parseInt(error.message.match(/\d+/)[0]) || 20;
+        setRetryTimeout(seconds);
+        
+        // Start countdown
+        const interval = setInterval(() => {
+          setRetryTimeout(prev => {
+            if (prev === null || prev <= 1) {
+              clearInterval(interval);
+              return null;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+      
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось получить ответ",
@@ -174,8 +202,13 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
         </div>
         <ChatInput 
           onSendMessage={handleSendMessage} 
-          disabled={isTyping || isInitializing} 
+          disabled={isTyping || isInitializing || retryTimeout !== null} 
         />
+        {retryTimeout !== null && (
+          <div className="text-center text-sm text-gray-500">
+            Следующий запрос будет доступен через {retryTimeout} секунд
+          </div>
+        )}
       </div>
     </Card>
   );
