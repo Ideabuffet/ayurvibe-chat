@@ -27,7 +27,9 @@ export const getOpenAIResponse = async (
       throw new Error("Не удалось получить ответ от сервера");
     }
 
-    onToken?.(data.content);
+    if (onToken) {
+      onToken(data.content);
+    }
     return data.content;
 
   } catch (error: any) {

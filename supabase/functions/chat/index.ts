@@ -1,7 +1,5 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -20,6 +19,11 @@ serve(async (req) => {
 
     if (!message || !dosha || !category) {
       throw new Error('Missing required parameters');
+    }
+
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
     }
 
     const categoryPrompt = getCategoryPrompt(category);
@@ -46,12 +50,13 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: message }
         ],
-        stream: false,
+        temperature: 0.7,
+        max_tokens: 1000,
       }),
     });
 
@@ -59,9 +64,8 @@ serve(async (req) => {
       const error = await response.json();
       console.error('OpenAI API error:', error);
       
-      // Handle rate limiting specifically
       if (error.error?.message?.includes('Rate limit')) {
-        const waitTime = 20; // Default wait time in seconds
+        const waitTime = 20;
         const match = error.error.message.match(/Please try again in (\d+)s/);
         const retryAfter = match ? parseInt(match[1]) : waitTime;
         
@@ -73,7 +77,7 @@ serve(async (req) => {
           }),
           {
             status: 429,
-            headers: corsHeaders
+            headers: { ...corsHeaders }
           }
         );
       }
@@ -84,12 +88,14 @@ serve(async (req) => {
     const data = await response.json();
     const content = data.choices[0].message.content;
 
-    return new Response(JSON.stringify({ content }), {
-      headers: corsHeaders
-    });
+    return new Response(
+      JSON.stringify({ content }),
+      { headers: corsHeaders }
+    );
 
   } catch (error) {
     console.error('Error in chat function:', error);
+    
     return new Response(
       JSON.stringify({
         error: error.message || 'Internal Server Error',
@@ -116,7 +122,8 @@ const getCategoryPrompt = (category: string) => {
     stress: `Ты - специалист по управлению стрессом в Аюрведе. Давай рекомендации по эмоциональному балансу.`,
     beauty: `Ты - специалист по аюрведической красоте. Давай рекомендации по уходу за кожей и волосами.`,
     energy: `Ты - специалист по энергетическим практикам в Аюрведе. Давай рекомендации по повышению энергии.`,
-    sleep: `Ты - специалист по улучшению сна в Аюрведе. Давай рекомендации по режиму сна.`
+    sleep: `Ты - специалист по улучшению сна в Аюрведе. Давай рекомендации по режиму сна.`,
+    dosha: `Ты - эксперт по дошам в Аюрведе. Давай рекомендации с учетом текущей доши пользователя.`
   };
 
   return prompts[category] || prompts.general;
