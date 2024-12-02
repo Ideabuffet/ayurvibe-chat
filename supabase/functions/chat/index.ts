@@ -28,7 +28,7 @@ serve(async (req) => {
     if (category === 'general' && message === "Дай краткое введение и спроси, что конкретно интересует пользователя по этой теме") {
       return new Response(
         JSON.stringify({ content: "Здравствуйте! Чем могу помочь?" }),
-        { headers: corsHeaders }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -83,7 +83,7 @@ serve(async (req) => {
           }),
           {
             status: 429,
-            headers: { ...corsHeaders }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           }
         );
       }
@@ -96,7 +96,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ content }),
-      { headers: corsHeaders }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
@@ -109,7 +109,7 @@ serve(async (req) => {
       }),
       {
         status: 500,
-        headers: corsHeaders
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
@@ -118,6 +118,7 @@ serve(async (req) => {
 const getCategoryPrompt = (category: string) => {
   const prompts: Record<string, string> = {
     general: `Ты - эксперт по Аюрведе. Давай краткие, но информативные ответы, основанные на принципах Аюрведы.`,
+    nutrition: `Ты - специалист по аюрведическому питанию. Давай рекомендации по диете и питанию.`,
     health: `Ты - аюрведический консультант по здоровью. Давай конкретные рекомендации по поддержанию баланса доши.`,
     meditation: `Ты - специалист по медитации и пранаяме в Аюрведе. Давай рекомендации по практикам медитации и дыхательным упражнениям.`,
     routine: `Ты - специалист по аюрведическому распорядку дня (Диначарья). Давай рекомендации по ежедневным практикам.`,
