@@ -12,7 +12,6 @@ export const getOpenAIResponse = async (
     });
 
     if (error) {
-      // Parse error response
       let errorBody;
       try {
         errorBody = JSON.parse(error.message);
@@ -20,7 +19,6 @@ export const getOpenAIResponse = async (
         errorBody = { error: error.message };
       }
 
-      // Handle rate limit error specifically
       if (error.status === 429 || errorBody.error?.includes('Rate limit')) {
         const retryAfter = errorBody.retryAfter || 20;
         throw new Error(`Превышен лимит запросов. Пожалуйста, подождите ${retryAfter} секунд и попробуйте снова.`);
@@ -60,8 +58,8 @@ export const getOpenAIResponse = async (
         
         try {
           const parsed = JSON.parse(data);
-          if (parsed.content && onToken) {
-            onToken(parsed.content);
+          if (parsed.content) {
+            onToken?.(parsed.content);
             fullResponse += parsed.content;
           }
         } catch (e) {

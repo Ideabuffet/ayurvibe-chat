@@ -23,7 +23,7 @@ serve(async (req) => {
       throw new Error('Missing required parameters');
     }
 
-    console.log(`Processing request for dosha: ${dosha}, category: ${category}`);
+    console.log(`Processing request for dosha: ${dosha}, category: ${category}, message: ${message}`);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -68,7 +68,6 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    // Transform the response into a readable stream
     const stream = response.body;
     const reader = stream.getReader();
     const encoder = new TextEncoder();
@@ -97,7 +96,8 @@ serve(async (req) => {
                     const parsed = JSON.parse(data);
                     const token = parsed.choices[0]?.delta?.content || '';
                     if (token) {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: token })}\n\n`));
+                      const message = JSON.stringify({ content: token });
+                      controller.enqueue(encoder.encode(`data: ${message}\n\n`));
                     }
                   } catch (e) {
                     console.error('Error parsing JSON:', e);
@@ -112,10 +112,7 @@ serve(async (req) => {
         },
       }),
       { 
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'text/event-stream',
-        }
+        headers: corsHeaders
       }
     );
 
