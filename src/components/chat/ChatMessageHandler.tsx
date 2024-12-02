@@ -90,6 +90,17 @@ export const useChatMessageHandler = ({
       if (error.message.includes('Превышен лимит запросов')) {
         const seconds = parseInt(error.message.match(/\d+/)[0]) || 20;
         setRetryTimeout(seconds);
+        
+        // Start countdown
+        const interval = setInterval(() => {
+          setRetryTimeout(prev => {
+            if (prev === null || prev <= 1) {
+              clearInterval(interval);
+              return null;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
       
       toast({

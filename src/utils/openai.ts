@@ -13,6 +13,13 @@ export const getOpenAIResponse = async (
 
     if (error) {
       console.error('Supabase function error:', error);
+      
+      // Check if it's a rate limit error
+      if (error.message.includes('Rate limit') || error.status === 429) {
+        const retryAfter = 20; // Default to 20 seconds if not specified
+        throw new Error(`Превышен лимит запросов. Пожалуйста, подождите ${retryAfter} секунд перед следующим запросом.`);
+      }
+      
       throw new Error(error.message || "Ошибка при получении ответа");
     }
 
@@ -20,15 +27,11 @@ export const getOpenAIResponse = async (
       throw new Error("Не удалось получить ответ от сервера");
     }
 
-    // Вызываем callback с полным ответом
     onToken?.(data.content);
     return data.content;
 
   } catch (error: any) {
     console.error("Error in getOpenAIResponse:", error);
-    if (error.message.includes('Rate limit')) {
-      throw new Error("Превышен лимит запросов. Пожалуйста, подождите 20 секунд перед следующим запросом.");
-    }
     throw error;
   }
 };
