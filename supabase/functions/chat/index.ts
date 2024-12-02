@@ -68,7 +68,51 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Error calling OpenAI API');
     }
 
-    return new Response(response.body, { headers: corsHeaders });
+    // Transform the response into a readable stream
+    const stream = response.body;
+    const reader = stream.getReader();
+    const encoder = new TextEncoder();
+
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              
+              if (done) {
+                controller.close();
+                break;
+              }
+
+              const text = new TextDecoder().decode(value);
+              const lines = text.split('\n').filter(line => line.trim() !== '');
+              
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  const data = line.slice(6);
+                  if (data === '[DONE]') continue;
+                  
+                  try {
+                    const parsed = JSON.parse(data);
+                    const token = parsed.choices[0]?.delta?.content || '';
+                    if (token) {
+                      controller.enqueue(encoder.encode(`data: ${token}\n\n`));
+                    }
+                  } catch (e) {
+                    console.error('Error parsing JSON:', e);
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Stream reading error:', error);
+            controller.error(error);
+          }
+        },
+      }),
+      { headers: corsHeaders }
+    );
 
   } catch (error) {
     console.error('Error in chat function:', error);
