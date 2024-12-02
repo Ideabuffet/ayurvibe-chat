@@ -36,7 +36,15 @@ export const DoshaQuiz = () => {
           .single();
         
         if (data?.dosha && showResults) {
-          setSavedDosha(data.dosha as DoshaType);
+          // Convert English dosha names to Russian
+          const doshaMap: Record<string, DoshaType> = {
+            'питта': 'pitta',
+            'вата': 'vata',
+            'капха': 'kapha',
+          };
+          const normalizedDosha = data.dosha.toLowerCase();
+          const doshaType = doshaMap[normalizedDosha] || data.dosha as DoshaType;
+          setSavedDosha(doshaType);
           setShowingResults(true);
         }
       }
@@ -74,9 +82,16 @@ export const DoshaQuiz = () => {
       
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.id) {
+        // Convert dosha name to Russian before saving
+        const doshaTranslations: Record<DoshaType, string> = {
+          'pitta': 'питта',
+          'vata': 'вата',
+          'kapha': 'капха'
+        };
+        
         await supabase
           .from('profiles')
-          .update({ dosha: dominantDosha })
+          .update({ dosha: doshaTranslations[dominantDosha] })
           .eq('id', session.user.id);
       }
       

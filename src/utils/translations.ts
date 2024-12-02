@@ -5,6 +5,7 @@ type TranslationMap = {
 export const ayurvedaTranslations: TranslationMap = {
   "Vata": "Вата",
   "Pitta": "Питта",
+  "pitta": "питта",
   "Kapha": "Капха",
   "dosha": "доша",
   "doshas": "доши",
@@ -31,8 +32,8 @@ export const translateAyurvedaTerms = (text: string): string => {
   let translatedText = text;
   
   Object.entries(ayurvedaTranslations).forEach(([english, russian]) => {
-    // Create a regex that matches the word with word boundaries
-    const regex = new RegExp(`\\b${english}\\b`, 'g');
+    // Create a regex that matches the word with word boundaries and case-insensitive
+    const regex = new RegExp(`\\b${english}\\b`, 'gi');
     translatedText = translatedText.replace(regex, russian);
   });
   
