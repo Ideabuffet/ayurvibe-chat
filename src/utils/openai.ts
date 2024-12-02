@@ -60,10 +60,9 @@ export const getOpenAIResponse = async (
         
         try {
           const parsed = JSON.parse(data);
-          const token = parsed.choices[0]?.delta?.content || '';
-          if (token && onToken) {
-            onToken(token);
-            fullResponse += token;
+          if (parsed.content && onToken) {
+            onToken(parsed.content);
+            fullResponse += parsed.content;
           }
         } catch (e) {
           console.error('Error parsing JSON:', e);
