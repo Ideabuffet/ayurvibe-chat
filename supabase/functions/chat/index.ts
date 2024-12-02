@@ -6,6 +6,7 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Content-Type': 'application/json',
 };
 
 serve(async (req) => {
@@ -18,11 +19,15 @@ serve(async (req) => {
   }
 
   try {
+    if (!openAIApiKey) {
+      throw new Error('OPENAI_API_KEY is not configured');
+    }
+
     const { message, dosha, category } = await req.json();
     console.log('Processing request:', { message, dosha, category });
 
-    if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY is not configured');
+    if (!message || !dosha || !category) {
+      throw new Error('Missing required parameters');
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -62,16 +67,13 @@ serve(async (req) => {
         response: data.choices[0].message.content,
         status: 'success'
       }), 
-      {
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        },
-      }
+      { headers: corsHeaders }
     );
 
   } catch (error) {
     console.error('Error in chat function:', error);
+    
+    // Ensure we always return a properly formatted JSON response
     return new Response(
       JSON.stringify({ 
         error: error.message || 'Internal Server Error',
@@ -79,10 +81,7 @@ serve(async (req) => {
       }), 
       {
         status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        },
+        headers: corsHeaders
       }
     );
   }

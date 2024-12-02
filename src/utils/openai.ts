@@ -18,9 +18,19 @@ export const getOpenAIResponse = async (
       throw new Error(error.message || "Ошибка при вызове функции")
     }
 
-    if (!data?.response) {
-      console.error('Empty response from server:', data)
+    if (!data) {
+      console.error('Empty response from server')
       throw new Error("Пустой ответ от сервера")
+    }
+
+    if (!data.response && data.error) {
+      console.error('Server returned error:', data.error)
+      throw new Error(data.error)
+    }
+
+    if (typeof data.response !== 'string') {
+      console.error('Invalid response format:', data)
+      throw new Error("Неверный формат ответа от сервера")
     }
 
     return data.response
