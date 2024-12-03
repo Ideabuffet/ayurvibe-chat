@@ -6,6 +6,8 @@ import { MessageList } from "./MessageList";
 import { RetryTimer } from "./RetryTimer";
 import { ChatInitializer } from "./ChatInitializer";
 import { useChatMessageHandler } from "./ChatMessageHandler";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface ChatContainerProps {
   category: string;
@@ -13,6 +15,7 @@ interface ChatContainerProps {
 }
 
 export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Array<{ content: string; isAi: boolean; timestamp: Date }>>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -43,6 +46,19 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
 
   return (
     <Card className="p-4">
+      {category === 'general' && (
+        <div className="mb-6 p-4 bg-ayurveda-primary/10 rounded-lg">
+          <p className="text-ayurveda-primary mb-3">
+            Рекомендуем перед тем как задавать вопросы в чате определить дошу
+          </p>
+          <Button 
+            onClick={() => navigate('/chat/dosha')}
+            className="bg-ayurveda-primary hover:bg-ayurveda-primary/90"
+          >
+            Определить дошу
+          </Button>
+        </div>
+      )}
       <ChatInitializer
         category={category}
         dosha={dosha}
