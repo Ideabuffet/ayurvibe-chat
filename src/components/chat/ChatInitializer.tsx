@@ -34,12 +34,7 @@ export const ChatInitializer = ({
               timestamp: new Date()
             }]);
           } else if (category === 'general') {
-            const initialMessage = `Чтобы получить более точные рекомендации, мы рекомендуем сначала определить вашу дошу. Это поможет персонализировать ответы под вашу конституцию.
-
-Нажмите кнопку ниже, чтобы определить вашу дошу:
-[Определить дошу]
-
-Здравствуйте! Чем могу помочь?`;
+            const initialMessage = "Здравствуйте! Чем могу помочь?";
             setMessages([{
               content: initialMessage,
               isAi: true,

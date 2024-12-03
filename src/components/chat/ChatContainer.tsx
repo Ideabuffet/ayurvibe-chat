@@ -49,7 +49,7 @@ export const ChatContainer = ({ category, dosha }: ChatContainerProps) => {
       {category === 'general' && (
         <div className="mb-6 p-4 bg-ayurveda-primary/10 rounded-lg">
           <p className="text-ayurveda-primary mb-3">
-            Рекомендуем перед тем как задавать вопросы в чате определить дошу
+            Чтобы получить более точные рекомендации, мы рекомендуем сначала определить вашу дошу. Это поможет персонализировать ответы под вашу конституцию. Нажмите кнопку ниже, чтобы определить вашу дошу
           </p>
           <Button 
             onClick={() => navigate('/chat/dosha')}
